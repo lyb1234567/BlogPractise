@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.blog.mapper.UserMapper">
+    <resultMap id="UserResultMap" type="com.example.blog.entity.User">
+        <id property="id" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="emailAddress" column="email_address"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.example.blog.entity.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (user_name, name, email_address, token, password)
+        VALUES (#{userName}, #{name}, #{emailAddress}, #{token}, #{password})
+    </insert>
+
+</mapper>

@@ -1,0 +1,35 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户登录</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- SweetAlert2 CSS (可选) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+<div class="container">
+  <h2>登录</h2>
+  <form id="login-form">
+    <div class="input-group">
+      <label for="login-username">用户名</label>
+      <input type="text" id="login-username" name="userName" required>
+    </div>
+    <div class="input-group">
+      <label for="login-password">密码</label>
+      <input type="password" id="login-password" name="passWord" required>
+    </div>
+    <button type="submit">登录</button>
+  </form>
+  <div class="toggle-container">
+    <p>还没有账号？<a href="register.html">注册</a></p>
+  </div>
+</div>
+
+<!-- SweetAlert2 JS (可选) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="js/login.js"></script>
+</body>
+</html>
