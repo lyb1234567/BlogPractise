@@ -27,4 +27,7 @@ public interface UserMapper {
     void updateToken(@Param("userName") String userName, @Param("token") String token);
 
     void insert(User user);
+
+    @Select("SELECT * FROM user WHERE id = #{userId}")
+    User findById(int userId);
 }
