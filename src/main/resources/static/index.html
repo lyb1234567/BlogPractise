@@ -1,0 +1,39 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的博客</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- SweetAlert2 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+<header>
+  <div class="logo">我的博客</div>
+  <div class="login-container">
+    <a href="login.html"><button id="loginBtn">登录</button></a>
+  </div>
+  <div id="userInfo" class="hidden">
+    <span id="userNameDisplay"></span>
+    <button id="logoutBtn">登出</button>
+  </div>
+</header>
+
+<main>
+  <h1>热门文章</h1>
+  <div id="articles" class="articles-container">
+    <!-- 文章卡片将动态插入这里 -->
+  </div>
+</main>
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- 公共工具函数 -->
+<script src="js/utils.js"></script>
+<!-- 主页面逻辑 -->
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -25,9 +25,10 @@ public class UserServiceImpl implements UserService {
     private JwtUtil jwtUtil;
     @Override
     public User login(UserLoginDTO userLoginDTO) {
-          String userName = userLoginDTO.getUserName();
-          String password = userLoginDTO.getPassWord();
-
+        String userName = userLoginDTO.getUserName();
+        String password = userLoginDTO.getPassWord();
+        System.out.println(userName);
+        System.out.println("Password: " + password);
 //          根据用户名查询数据库
           User user = userMapper.getByUserName(userName);
 
@@ -35,6 +36,7 @@ public class UserServiceImpl implements UserService {
           {
               throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
           }
+
 
           String userPassword = user.getPassword();
           String encodedPassword = DigestUtils.md5DigestAsHex(password.getBytes());

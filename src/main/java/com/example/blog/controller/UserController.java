@@ -32,7 +32,7 @@ public class UserController {
 
        UserLoginVo userLoginVo = UserLoginVo.builder()
                                             .id(user.getId())
-                                            .userName(user.getUserName()).token(user.getToken()).emailAddress(user.getEmailAddress()).name(user.getName()).build();
+                                            .userName(user.getUserName()).token(user.getToken()).emailAddress(user.getEmailAddress()).name(user.getName()).avatar(user.getAvatar()).build();
        return Result.success(userLoginVo);
     }
 

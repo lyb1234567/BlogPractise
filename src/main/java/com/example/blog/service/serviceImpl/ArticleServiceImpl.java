@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
@@ -38,12 +39,16 @@ public class ArticleServiceImpl implements ArticleService {
         LocalDateTime now = LocalDateTime.now();
         article.setCreationDate(now);
         article.setLastUpdateDate(now);
-
         article.setLikes(0);
         article.setViews(0);
         article.setCommentCounts(0);
         System.out.println(article);
         articleMapper.insert(article);
         return article;
+    }
+
+    @Override
+    public List<Article> getTop5ArticlesByLikes() {
+        return articleMapper.findTop5ByLikes();
     }
 }

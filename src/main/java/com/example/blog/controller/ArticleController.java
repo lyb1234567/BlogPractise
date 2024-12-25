@@ -10,14 +10,14 @@ import com.example.blog.service.ArticleCategoryService;
 import com.example.blog.service.ArticleService;
 import com.example.blog.service.UserService;
 import com.example.blog.vo.ArticleCreateVo;
+import com.example.blog.vo.ArticleVo;
 import com.example.blog.vo.UserRegisterVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/article")
@@ -34,15 +34,34 @@ public class ArticleController {
     private ArticleService articleService;
 
 
-    @PostMapping("/create_article")
+    @PostMapping("/create")
     public Result<ArticleCreateVo> articleCreate(@RequestBody ArticleCreateDTO articleCreateDTO)
     {
         log.info("创建文章: {}", articleCreateDTO );
-
         Article article = articleService.createArticle(articleCreateDTO);
         ArticleCreateVo articleCreateVo = ArticleCreateVo.builder().id(article.getId()).title(article.getTitle()).summary(article.getSummary()).content(article.getContent()).category_code(article.getCategoryCode()).status(article.getStatus()).created_by(article.getCreated_by()).creation_date(article.getCreationDate()).last_update_date(article.getLastUpdateDate()).build();
         return Result.success(articleCreateVo);
     }
+
+    // 获取点赞数最高的前五篇文章
+    // 获取点赞数最高的前五篇文章
+    @GetMapping("/showTop5ArticlesByLikes")
+    public Result<List<ArticleVo>> getTop5Articles() {
+        log.info("获取点赞数最高的前五篇文章");
+        List<Article> topArticles = articleService.getTop5ArticlesByLikes();
+        System.out.println(topArticles);
+        List<ArticleVo> articleVos = topArticles.stream().map(article ->
+                ArticleVo.builder()
+                        .id(article.getId())
+                        .title(article.getTitle())
+                        .summary(article.getSummary())
+                        .likes(article.getLikes())
+                        .creationDate(article.getCreationDate())
+                        .build()
+        ).toList();
+        return Result.success(articleVos);
+    }
+
 
 
 }
