@@ -13,4 +13,8 @@ public interface ArticleMapper {
 
     @Select("SELECT * FROM article WHERE delete_flag != 'Y' ORDER BY likes DESC LIMIT 5")
     List<Article> findTop5ByLikes();
+
+
+    @Select("SELECT * FROM article WHERE id = #{articleId}")
+    Article findById(int articleId);
 }

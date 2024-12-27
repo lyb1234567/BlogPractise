@@ -8,6 +8,7 @@ import com.example.blog.entity.Article;
 import com.example.blog.entity.User;
 import com.example.blog.service.ArticleCategoryService;
 import com.example.blog.service.ArticleService;
+import com.example.blog.service.LikeService;
 import com.example.blog.service.UserService;
 import com.example.blog.vo.ArticleCreateVo;
 import com.example.blog.vo.ArticleVo;
@@ -33,8 +34,11 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
+    @Autowired
+    private LikeService likeService;
 
-    @PostMapping("/create")
+
+    @PostMapping("/createArticle")
     public Result<ArticleCreateVo> articleCreate(@RequestBody ArticleCreateDTO articleCreateDTO)
     {
         log.info("创建文章: {}", articleCreateDTO );
@@ -63,5 +67,12 @@ public class ArticleController {
     }
 
 
-
+   @PostMapping("/likeArticle")
+    public Result<ArticleVo> likeArticle(@RequestParam("userId") int userId, @RequestParam("articleId") int articleId)
+   {
+       log.info("点赞文章: userId={}, articleId={}", userId, articleId);
+       Article article= likeService.createLike(userId, articleId);
+       ArticleVo articleVo = ArticleVo.builder().id(article.getId()).title(article.getTitle()).summary(article.getSummary()).likes(article.getLikes()).creationDate(article.getCreationDate()).build();
+       return Result.success(articleVo);
+   }
 }
