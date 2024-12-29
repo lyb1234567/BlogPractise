@@ -42,7 +42,6 @@ public class ArticleServiceImpl implements ArticleService {
         article.setLikes(0);
         article.setViews(0);
         article.setCommentCounts(0);
-        System.out.println(article);
         articleMapper.insert(article);
         return article;
     }

@@ -12,6 +12,7 @@ import com.example.blog.service.LikeService;
 import com.example.blog.service.UserService;
 import com.example.blog.vo.ArticleCreateVo;
 import com.example.blog.vo.ArticleVo;
+import com.example.blog.vo.UserLikeVo;
 import com.example.blog.vo.UserRegisterVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -74,5 +75,18 @@ public class ArticleController {
        Article article= likeService.createLike(userId, articleId);
        ArticleVo articleVo = ArticleVo.builder().id(article.getId()).title(article.getTitle()).summary(article.getSummary()).likes(article.getLikes()).creationDate(article.getCreationDate()).build();
        return Result.success(articleVo);
+   }
+   @GetMapping("/getUserWhoLikes")
+    public Result<List<UserLikeVo>> getUserWhoLikes(@RequestParam("articleId") int articleId)
+   {
+       log.info("获取点赞文章的用户: articleId={}", articleId);
+       List<User> usersWhoLikes = likeService.getUserWhoLikes(articleId);
+       List<UserLikeVo> userLikeVos = usersWhoLikes.stream().map(user ->
+               UserLikeVo.builder()
+                      .id(user.getId())
+                      .userName(user.getUserName())
+                      .build()
+       ).toList();
+       return Result.success(userLikeVos);
    }
 }

@@ -1,16 +1,26 @@
 package com.example.blog.mapper;
 
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import com.example.blog.entity.User;
+import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface LikeMapper {
 
-    @Insert("INSERT INTO like (article_id, user_id) VALUES (#{articleId}, #{userId})")
-    void insertLike(int articleId, int userId);
+    @Insert("INSERT INTO `like` (article_id, user_id) VALUES (#{articleId}, #{userId})")
+    void insertLike(int userId, int articleId);
 
-    @Select("SELECT COUNT(*) FROM like WHERE article_id = #{articleId}")
+    @Select("SELECT COUNT(*) FROM `like` WHERE article_id = #{articleId}")
     int countLikesByArticleId(int articleId);
+
+
+    @Select("SELECT u.* FROM user u INNER JOIN `like` l ON u.id = l.user_id WHERE l.article_id = #{articleId}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "userName", column = "user_name"),
+            // 添加其他需要映射的字段
+    })
+    List<User> getUserWhoLikes(int articleId);
 }

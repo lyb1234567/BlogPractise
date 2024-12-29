@@ -12,6 +12,8 @@ import com.example.blog.service.LikeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class LikeServiceImpl implements LikeService {
 
@@ -39,14 +41,28 @@ public class LikeServiceImpl implements LikeService {
         {
             throw new ArticleNotFoundException("Article not found with id: " + articleId);
         }
+        System.out.println("UserId: " + userId + ", ArticleId: " + articleId);
         likeMapper.insertLike(userId, articleId);
         int curLikes = countLikes(articleId);
         article.setLikes(curLikes);
+        articleMapper.updateLikes(article.getId(), curLikes);
         return article;
     }
 
     @Override
     public int countLikes(int articleId) {
         return likeMapper.countLikesByArticleId(articleId);
+    }
+
+    @Override
+    public List<User> getUserWhoLikes(int articleId) {
+        Article article = articleMapper.findById(articleId);
+        if (article == null)
+        {
+            throw new ArticleNotFoundException("Article not found with id: " + articleId);
+        }
+        List<User> users = likeMapper.getUserWhoLikes(articleId);
+        System.out.println(users);
+        return users;
     }
 }

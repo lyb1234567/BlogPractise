@@ -136,6 +136,38 @@ main h1 {
     color: #f5222d;
 }
 
+.likes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* 点赞数样式 */
+.likes-count {
+    font-size: 16px;
+    color: #555;
+}
+
+/* 大拇指图标样式 */
+.like-icon {
+    cursor: pointer;
+    transition: color 0.3s ease;
+    color: #777; /* 未点赞时的颜色，深灰色 */
+}
+
+.like-icon.liked {
+    color: #1e90ff; /* 已点赞时的颜色，深蓝色 */
+}
+
+.like-icon:hover {
+    color: #f00; /* 悬停时变红 */
+    transform: scale(1.2); /* 放大效果 */
+}
+
+.like-icon:active {
+    transform: scale(1); /* 点击时恢复原大小 */
+}
 /* 登录和注册页面样式 */
 .container {
     background-color: #ffffff;
