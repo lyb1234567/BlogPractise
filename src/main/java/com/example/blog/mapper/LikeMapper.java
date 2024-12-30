@@ -23,4 +23,7 @@ public interface LikeMapper {
             // 添加其他需要映射的字段
     })
     List<User> getUserWhoLikes(int articleId);
+
+    @Delete("DELETE FROM `like` WHERE user_id = #{userId} AND article_id = #{articleId}")
+    void deleteLike(int userId, int articleId);
 }

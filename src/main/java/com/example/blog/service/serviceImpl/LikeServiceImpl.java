@@ -41,7 +41,6 @@ public class LikeServiceImpl implements LikeService {
         {
             throw new ArticleNotFoundException("Article not found with id: " + articleId);
         }
-        System.out.println("UserId: " + userId + ", ArticleId: " + articleId);
         likeMapper.insertLike(userId, articleId);
         int curLikes = countLikes(articleId);
         article.setLikes(curLikes);
@@ -64,5 +63,26 @@ public class LikeServiceImpl implements LikeService {
         List<User> users = likeMapper.getUserWhoLikes(articleId);
         System.out.println(users);
         return users;
+    }
+
+    @Override
+    public Article deleteLike(int userId, int articleId) {
+        User user = userMapper.findById(userId);
+
+        Article article = articleMapper.findById(articleId);
+        if(user == null)
+        {
+            throw new UserNotFoundException("User not found with id: " + userId);
+        }
+        if (article == null)
+        {
+            throw new ArticleNotFoundException("Article not found with id: " + articleId);
+        }
+
+        likeMapper.deleteLike(userId, articleId);
+        int curLikes = countLikes(articleId);
+        article.setLikes(curLikes);
+        articleMapper.updateLikes(article.getId(), curLikes);
+        return article;
     }
 }

@@ -13,4 +13,6 @@ public interface LikeService {
     int countLikes(int articleId);
 
     List<User> getUserWhoLikes(int articleId);
+
+    Article deleteLike(int userId, int articleId);
 }

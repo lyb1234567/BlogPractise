@@ -64,34 +64,81 @@ async function renderArticles(articles) {
 
         // 获取点赞用户列表
         const likedUsers = await fetchLikedUsers(article.id);
-        console.log(article.id, likedUsers);
         const likeIconClass = likedUsers.some(user => user.id === userId) ? 'like-icon liked' : 'like-icon';
-        console.log(article.id, likeIconClass);
-        card.innerHTML = `
-            <h3>${escapeHTML(article.title)}</h3>
-            <p>${escapeHTML(article.summary)}</p>
-            <p class="likes">
-                <span class="${likeIconClass}" data-article-id="${article.id}" title="点赞">&#128077; ${article.likes}</span>
-            </p>
-            <p><small>${new Date(article.creationDate).toLocaleDateString()}</small></p>
-        `;
+
+        if (likeIconClass === 'like-icon liked')
+        {
+         card.innerHTML = `
+             <h3>${escapeHTML(article.title)}</h3>
+             <p>${escapeHTML(article.summary)}</p>
+             <p class="likes">
+                 <span class="${likeIconClass}" data-article-id="${article.id}" title="点赞">👍🏿${article.likes}</span>
+             </p>
+             <p><small>${new Date(article.creationDate).toLocaleDateString()}</small></p>
+         `;
+        }
+        else
+        {
+            card.innerHTML = `
+                 <h3>${escapeHTML(article.title)}</h3>
+                 <p>${escapeHTML(article.summary)}</p>
+                 <p class="likes">
+                     <span class="${likeIconClass}" data-article-id="${article.id}" title="点赞">👍${article.likes}</span>
+                 </p>
+                 <p><small>${new Date(article.creationDate).toLocaleDateString()}</small></p>
+             `;
+        }
 
         // 点击卡片跳转到文章详情页（假设有对应的页面）
         card.querySelector('h3').addEventListener('click', () => {
             window.location.href = `/article.html?id=${article.id}`;
         });
 
+
+
         // 点赞图标事件
         const likeIcon = card.querySelector('.like-icon');
         likeIcon.addEventListener('click', (e) => {
             e.stopPropagation(); // 阻止事件冒泡，防止触发卡片点击事件
-            likeArticle(article.id, likeIcon);
+            if (likeIcon.classList.contains('liked')) {
+                unlikeArticle(article.id, likeIcon);
+            } else {
+                likeArticle(article.id, likeIcon);
+            }
         });
-
         articlesContainer.appendChild(card);
     }
 }
 
+
+//取消文章点赞
+
+async function unlikeArticle(articleId, likeIcon)
+{
+    try
+    {
+       const userId = JSON.parse(localStorage.getItem('user')).id;
+       const response = await fetch(`/article/unlikeArticle?userId=${userId}&articleId=${articleId}`, {
+           method: 'POST',
+           headers: {
+               'Authorization': `Bearer ${localStorage.getItem('token')}`
+           }
+       });
+       const result = await response.json();
+       if (response.ok && result.code === 1)
+       {
+         const articleVo = result.data;
+         likeIcon.innerHTML = `👍${articleVo.likes}`;
+         likeIcon.classList.toggle('liked');
+       }else{
+         showMessage('error', '取消点赞失败', result.message || '请稍后再试。');
+       }
+    }catch(error)
+    {
+       console.error('取消点赞错误:', error);
+       showMessage('error', '取消点赞失败', result.message || '请稍后再试。');
+    }
+}
 
 // 点赞文章
 async function likeArticle(articleId, likeIcon) {
@@ -106,9 +153,8 @@ async function likeArticle(articleId, likeIcon) {
         const result = await response.json();
         if (response.ok && result.code === 1) {
             const articleVo = result.data;
-            likeIcon.innerHTML = `&#128077; ${articleVo.likes}`;
+            likeIcon.innerHTML = `👍🏿${articleVo.likes}`;
             likeIcon.classList.toggle('liked');
-            showMessage('success', '点赞成功', '感谢您的支持！');
         } else {
             showMessage('error', '点赞失败', result.message || '请稍后再试。');
         }
