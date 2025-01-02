@@ -41,7 +41,6 @@ header {
   height: 50px;
   border-radius: 50%;
 }
-
 .login-container, #userInfo {
     display: flex;
     align-items: center;
@@ -105,6 +104,26 @@ main h1 {
     gap: 20px;
     justify-content: center;
 }
+/* 文章标题 */
+.article-container h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* 作者信息 */
+.article-container .author {
+    font-size: 1em;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* 文章内容 */
+.article-container .content {
+    font-size: 1.2em;
+    line-height: 1.6;
+    color: #444;
+}
 
 .article-card {
     background-color: white;
@@ -167,6 +186,85 @@ main h1 {
 
 .like-icon:active {
     transform: scale(1); /* 点击时恢复原大小 */
+}
+.comments-section {
+    background-color: #fff;
+    padding: 30px;
+    margin-top: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.comments-section h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.comments-list {
+    margin-bottom: 30px;
+}
+
+.comment {
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+}
+.comment-children {
+    margin-left: 20px; /* 往右缩进 */
+    border-left: 1px solid #ccc; /* 打一个左边框或其他样式 */
+    padding-left: 10px;
+}
+.comment:last-child {
+    border-bottom: none;
+}
+
+.comment .comment-author {
+    font-weight: 600;
+    color: #007BFF;
+}
+
+.comment .comment-date {
+    font-size: 0.85em;
+    color: #999;
+    margin-left: 10px;
+}
+
+.comment .comment-content {
+    margin-top: 8px;
+    font-size: 1em;
+    color: #555;
+}
+.comment-avatar {
+   vertical-align: middle;
+   width: 30px;
+   height: 30px;
+   border-radius: 50%;
+ }
+
+.comment-form-container h3 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+
+#comment-form {
+    display: flex;
+    flex-direction: column;
+}
+
+#comment-form textarea {
+    resize: vertical;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+#comment-form textarea:focus {
+    border-color: #007BFF;
+    outline: none;
 }
 /* 登录和注册页面样式 */
 .container {

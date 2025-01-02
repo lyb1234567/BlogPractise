@@ -26,13 +26,13 @@ public class Article {
 
     private char status;
 
-    char delete_flag;
+    char deleteFlag;
 
     private LocalDateTime creationDate;
 
     private LocalDateTime lastUpdateDate;
 
-    private int last_updated_by;
+    private int lastUpdatedBy;
 
-    private int created_by;
+    private int createdBy;
 }

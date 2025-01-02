@@ -2,9 +2,7 @@ package com.example.blog.mapper;
 
 
 import com.example.blog.entity.Article;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -12,7 +10,6 @@ import java.util.List;
 public interface ArticleMapper {
     void insert(Article article);
 
-    @Select("SELECT * FROM article WHERE delete_flag != 'Y' ORDER BY likes DESC LIMIT 5")
     List<Article> findTop5ByLikes();
 
 
@@ -24,4 +21,12 @@ public interface ArticleMapper {
 
     @Update("UPDATE article SET likes = #{likes} WHERE id = #{id}")
     void updateLikes(int id, int likes);
+
+    @Select("SELECT * FROM article WHERE id = #{articleId}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "userId", column = "user_id"),
+            // 添加其他需要映射的字段
+    })
+    Article getById(int articleId);
 }

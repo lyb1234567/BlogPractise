@@ -16,12 +16,19 @@
         <result property="likes" column="likes" />
         <result property="commentCounts" column="comment_counts" />
         <result property="status" column="status" />
-        <result property="delete_flag" column="delete_flag" />
+        <result property="deleteFlag" column="delete_flag" />
         <result property="creationDate" column="creation_date" />
         <result property="lastUpdateDate" column="last_update_date" />
-        <result property="last_updated_by" column="last_updated_by" />
-        <result property="created_by" column="created_by" />
+        <result property="lastUpdatedBy" column="last_updated_by" />
+        <result property="createdBy" column="created_by" />
     </resultMap>
+    <select id="findTop5ByLikes" resultMap="ArticleResultMap">
+        SELECT *
+        FROM article
+        WHERE delete_flag != 'Y'
+        ORDER BY likes DESC
+        LIMIT 5
+    </select>
     <insert id="insert" parameterType="com.example.blog.entity.Article" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO article (
         title,

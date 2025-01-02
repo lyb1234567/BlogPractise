@@ -1,5 +1,6 @@
 package com.example.blog.service.serviceImpl;
 
+import blog_common.exception.ArticleNotFoundException;
 import com.example.blog.dto.ArticleCreateDTO;
 import com.example.blog.entity.Article;
 import com.example.blog.entity.User;
@@ -48,6 +49,20 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<Article> getTop5ArticlesByLikes() {
-        return articleMapper.findTop5ByLikes();
+        List<Article> articles = articleMapper.findTop5ByLikes();
+        return articles;
+    }
+
+    @Override
+    public Article getById(int articleId) {
+        Article article = articleMapper.getById(articleId);
+
+
+        if (article == null)
+        {
+            throw new ArticleNotFoundException("Article not found");
+        }
+
+        return article;
     }
 }

@@ -9,4 +9,6 @@ public interface ArticleService {
     Article createArticle(ArticleCreateDTO articleCreateDTO);
 
     List<Article> getTop5ArticlesByLikes();
+
+    Article getById(int articleId);
 }

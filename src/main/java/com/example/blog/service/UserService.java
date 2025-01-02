@@ -12,4 +12,6 @@ public interface UserService {
     public User login(UserLoginDTO userLoginDTO);
 
     User register(UserRegisterDTO userRegisterDTO);
+
+    String getAvatar(int userId);
 }

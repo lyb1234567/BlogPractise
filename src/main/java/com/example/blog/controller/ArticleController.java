@@ -44,7 +44,7 @@ public class ArticleController {
     {
         log.info("创建文章: {}", articleCreateDTO );
         Article article = articleService.createArticle(articleCreateDTO);
-        ArticleCreateVo articleCreateVo = ArticleCreateVo.builder().id(article.getId()).title(article.getTitle()).summary(article.getSummary()).content(article.getContent()).category_code(article.getCategoryCode()).status(article.getStatus()).created_by(article.getCreated_by()).creation_date(article.getCreationDate()).last_update_date(article.getLastUpdateDate()).build();
+        ArticleCreateVo articleCreateVo = ArticleCreateVo.builder().id(article.getId()).title(article.getTitle()).summary(article.getSummary()).content(article.getContent()).category_code(article.getCategoryCode()).status(article.getStatus()).created_by(article.getCreatedBy()).creation_date(article.getCreationDate()).last_update_date(article.getLastUpdateDate()).build();
         return Result.success(articleCreateVo);
     }
 
@@ -54,7 +54,6 @@ public class ArticleController {
     public Result<List<ArticleVo>> getTop5Articles() {
         log.info("获取点赞数最高的前五篇文章");
         List<Article> topArticles = articleService.getTop5ArticlesByLikes();
-        System.out.println(topArticles);
         List<ArticleVo> articleVos = topArticles.stream().map(article ->
                 ArticleVo.builder()
                         .id(article.getId())
@@ -80,7 +79,7 @@ public class ArticleController {
    @PostMapping("/unlikeArticle")
     public Result<ArticleVo> unlikeArticle(@RequestParam("userId") int userId, @RequestParam("articleId") int articleId)
    {
-       log.info("取消点��文章: userId={}, articleId={}", userId, articleId);
+       log.info("取消点赞文章: userId={}, articleId={}", userId, articleId);
        Article article= likeService.deleteLike(userId, articleId);
        ArticleVo articleVo = ArticleVo.builder().id(article.getId()).title(article.getTitle()).summary(article.getSummary()).likes(article.getLikes()).creationDate(article.getCreationDate()).build();
        return Result.success(articleVo);
@@ -98,4 +97,14 @@ public class ArticleController {
         ).toList();
         return Result.success(userLikeVos);
     }
+
+    @GetMapping("/showArticle")
+    public Result<ArticleVo> showArticle(@RequestParam("articleId") int articleId)
+    {
+        log.info("获取文章: articleId={}", articleId);
+        Article article = articleService.getById(articleId);
+        ArticleVo articleVo = ArticleVo.builder().id(article.getId()).title(article.getTitle()).summary(article.getSummary()).likes(article.getLikes()).creationDate(article.getCreationDate()).userId(article.getUserId()).content(article.getContent()).build();
+        return Result.success(articleVo);
+    }
+
 }

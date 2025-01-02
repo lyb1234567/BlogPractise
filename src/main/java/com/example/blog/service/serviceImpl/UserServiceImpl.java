@@ -1,5 +1,6 @@
 package com.example.blog.service.serviceImpl;
 
+import blog_common.exception.UserNotFoundException;
 import com.example.blog.Utils.JwtUtil;
 import blog_common.constant.MessageConstant;
 import blog_common.exception.AccountNotFoundException;
@@ -65,5 +66,17 @@ public class UserServiceImpl implements UserService {
         {
             throw new InsertUserException(e.getMessage());
         }
+    }
+
+    @Override
+    public String getAvatar(int userId) {
+        User user = userMapper.findById(userId);
+        System.out.println(user);
+        if (user == null)
+        {
+            throw new UserNotFoundException("User Not Found with id: " + userId);
+        }
+
+        return user.getAvatar();
     }
 }

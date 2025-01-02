@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章详情</title>
+  <!-- 引入Google字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- 引入Font Awesome图标库 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papP4KYkzWfxhL7vFObI1K1pJ54KwOj7VnC1TQwTmDsbw5e6O4wWkWCCRFtjpU9X0n4Fm5Eus1P5V+d2IcTQdg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- 引入CSS文件 -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="header">
+  <div class="container">
+    <h1 class="logo">我的博客</h1>
+    <nav class="nav">
+      <a href="index.html" class="nav-link">首页</a>
+      <!-- 可以根据需要添加更多导航链接 -->
+    </nav>
+  </div>
+</header>
+
+<main class="main-content">
+  <div id="article-container" class="article-container">
+    <!-- 文章详情将被渲染在这里 -->
+  </div>
+
+  <div id="comments-section" class="comments-section">
+    <h2>评论</h2>
+    <div id="comments-list" class="comments-list">
+      <!-- 评论列表将被渲染在这里 -->
+    </div>
+
+    <div id="comment-form-container" class="comment-form-container">
+      <h3>发表你的评论</h3>
+      <form id="comment-form">
+        <textarea id="comment-content" name="content" rows="4" placeholder="请输入你的评论..." required></textarea>
+        <button type="submit" class="submit-button">提交评论</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p>&copy; 2024 我的博客. 版权所有.</p>
+  </div>
+</footer>
+
+<!-- 引入JavaScript文件 -->
+<script src="js/article.js"></script>
+</body>
+</html>
