@@ -85,6 +85,7 @@ function buildCommentTree(comments) {
     // 收集根评论
     const rootComments = [];
 
+
     comments.forEach(c => {
         const current = map[c.id];
         // 如果 parentId == 0，则是根评论
@@ -99,6 +100,7 @@ function buildCommentTree(comments) {
         }
     });
 
+
     return rootComments;
 }
 
@@ -107,10 +109,9 @@ function buildCommentTree(comments) {
  * @param {Object} commentNode - 带 children 的评论对象
  * @returns {HTMLElement} DOM节点
  */
-function renderCommentNode(commentNode) {
+function renderCommentNode(commentNode , depth = 0) {
     const commentItem = document.createElement('div');
     commentItem.className = 'comment-item';
-    console.log('commentNode:', commentNode.userAvatar);
 
     // 评论内容，视你的字段情况作调整
     // 这里假设后端返回了 authorName, content, createTime
@@ -119,20 +120,24 @@ function renderCommentNode(commentNode) {
             <img src="${commentNode.userAvatar}"
                  alt="${commentNode.authorName}'s avatar"
                  class="comment-avatar">
+            <strong class="userName">${escapeHTML(commentNode.userName || '')}</strong>
+        </p>
+        <p class = "comment-content">
             ${escapeHTML(commentNode.content || '')}
         </p>
         <p class="comment-date">
-            ${commentNode.createTime ? new Date(commentNode.createTime).toLocaleString() : ''}
+              ${commentNode.creationDate ? new Date(commentNode.creationDate).toLocaleDateString() : ''}
         </p>
     `;
 
 
     // 如果有子评论，递归渲染
-    if (commentNode.children && commentNode.children.length > 0) {
+    if (commentNode.children && commentNode.children.length > 0 ) {
         const childrenContainer = document.createElement('div');
         childrenContainer.className = 'comment-children';
         commentNode.children.forEach(child => {
-            const childEl = renderCommentNode(child);
+            const childDepth = depth + 1; // 子评论的深度加 1
+            const childEl = renderCommentNode(child,depth);
             childrenContainer.appendChild(childEl);
         });
         commentItem.appendChild(childrenContainer);
@@ -199,7 +204,6 @@ async function renderArticles(articles) {
         const comments = await fetchComments(article.id);
         const commentIconHTML = `💬 ${comments.length}`;
 
-        console.log('article data:', JSON.stringify(article, null, 2));
         // 4. 组装文章卡片 HTML
         card.innerHTML = `
             <h3>${escapeHTML(article.title)}</h3>
@@ -247,8 +251,6 @@ async function renderArticles(articles) {
                 renderCommentsHierarchy(comments, commentsSection);
                 // 显示评论区
                 commentsSection.style.display = 'block';
-                // 顺便更新评论图标为实际数量
-                commentIcon.textContent = `💬 ${comments.length}`;
             } else {
                 // 隐藏评论区
                 commentsSection.style.display = 'none';

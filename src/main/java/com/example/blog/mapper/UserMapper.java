@@ -28,6 +28,15 @@ public interface UserMapper {
 
     void insert(User user);
 
+
     @Select("SELECT * FROM user WHERE id = #{userId}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "userName", column = "user_name"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "emailAddress", column = "email_address"),
+            @Result(property = "token", column = "token"),
+            @Result(property = "password", column = "password")
+    })
     User findById(int userId);
 }

@@ -218,23 +218,27 @@ main h1 {
     border-bottom: none;
 }
 
-.comment .comment-author {
+.comment-item {
+    padding-left: 10px;
+}
+
+.comment-item .userName {
     font-weight: 600;
-    color: #007BFF;
+    color: #555;
 }
 
-.comment .comment-date {
-    font-size: 0.85em;
-    color: #999;
-    margin-left: 10px;
+.comment-item .comment-date {
+    font-size: 0.65em;
+    color: #555;
 }
 
-.comment .comment-content {
+.comment-item .comment-content {
     margin-top: 8px;
     font-size: 1em;
     color: #555;
 }
-.comment-avatar {
+
+.comment-item .comment-avatar {
    vertical-align: middle;
    width: 30px;
    height: 30px;

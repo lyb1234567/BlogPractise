@@ -79,4 +79,13 @@ public class UserServiceImpl implements UserService {
 
         return user.getAvatar();
     }
+
+    @Override
+    public String getUserName(int userId) {
+        User user = userMapper.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User Not Found with id: " + userId);
+        }
+        return user.getUserName();
+    }
 }

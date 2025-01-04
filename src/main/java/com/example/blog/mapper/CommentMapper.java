@@ -19,6 +19,7 @@ public interface CommentMapper {
             @Result(property = "content", column = "content"),
             @Result(property = "parentId", column = "parent_id"),
             @Result(property ="articleId",column = "article_id"),
+            @Result(property="creationDate",column = "creation_date"  )
             // 添加其他需要映射的字段
     })
     List<Comment> getCommentsByArticleId(int articleId);

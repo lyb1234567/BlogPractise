@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -19,6 +21,10 @@ public class CommentVo {
     private String userAvatar;
     private int parentId;
     private int articleId;
+
+    private LocalDateTime creationDate;
+
+    private String userName;
 
 
 

@@ -31,13 +31,19 @@ public class CommentController {
     {
         log.info("获取文章的评论: articleId={}", articleId);
         List<Comment> comments = commentService.getCommentsByArticleId(articleId);
-        List<CommentVo> commentVos = comments.stream().map(comment ->
-                        CommentVo.builder()
-                                .id(comment.getId())
-                                .content(comment.getContent())
-                                .userId(comment.getUserId())
-                                .parentId(comment.getParentId())
-                                .articleId(comment.getArticleId()).userAvatar(comment.getUserAvatar()).build()).collect(Collectors.toList());
+        List<CommentVo> commentVos = comments.stream().map(comment -> {
+            String userName = userService.getUserName(comment.getUserId());
+            return CommentVo.builder()
+                    .id(comment.getId())
+                    .content(comment.getContent())
+                    .userId(comment.getUserId())
+                    .parentId(comment.getParentId())
+                    .articleId(comment.getArticleId())
+                    .userAvatar(comment.getUserAvatar())
+                    .creationDate(comment.getCreationDate())
+                    .userName(userName)
+                    .build();
+        }).collect(Collectors.toList());
         return Result.success(commentVos);
     }
 }

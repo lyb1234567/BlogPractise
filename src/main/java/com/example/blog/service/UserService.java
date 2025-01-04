@@ -14,4 +14,6 @@ public interface UserService {
     User register(UserRegisterDTO userRegisterDTO);
 
     String getAvatar(int userId);
+
+    String getUserName(int userId);
 }
