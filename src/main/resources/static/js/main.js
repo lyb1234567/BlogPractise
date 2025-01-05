@@ -280,19 +280,10 @@ async function renderArticles(articles) {
         const commentsSection = card.querySelector('.comments-section');
         commentIcon.addEventListener('click', async (e) => {
             e.stopPropagation();
-
-            // 若评论区隐藏，则加载并显示；若已显示，则隐藏
-            if (commentsSection.style.display === 'none') {
-                // 拉取评论数据
-                const comments = await fetchComments(article.id);
-                // 用层级方式渲染评论
-                renderCommentsHierarchy(comments, commentsSection);
-                // 显示评论区
-                commentsSection.style.display = 'block';
-            } else {
-                // 隐藏评论区
-                commentsSection.style.display = 'none';
-            }
+            // 获取当前文章的评论数据
+            const comments = await fetchComments(article.id);
+            // 显示弹窗并渲染评论
+            showCommentPopup(comments);
         });
 
         // 把卡片加到列表容器
@@ -300,6 +291,94 @@ async function renderArticles(articles) {
     }
 }
 
+function showCommentPopup(comments, articleId) {
+    const popup = document.getElementById('comment-popup');
+    const popupComments = document.getElementById('popup-comments');
+    const popupTitle = document.getElementById('comment-title');
+
+    // 清空之前的评论内容
+    popupComments.innerHTML = '';
+
+    // 设置标题
+    popupTitle.textContent = `${comments.length}条评论`;
+
+    // 渲染新的评论内容
+    renderCommentsHierarchy(comments, popupComments);
+
+    // 设置 articleId 到 popup 的 data 属性
+    popup.dataset.articleId = articleId;
+
+    // 显示弹窗
+    popup.style.display = 'flex';
+
+    // 绑定提交事件
+    document.getElementById('submit-comment').addEventListener('click', () => {
+        submitComment(articleId);
+    }, { once: true });
+
+    // 绑定关闭事件
+    document.addEventListener('click', (e) => {
+        const popup = document.getElementById('comment-popup');
+        if (popup && popup.style.display === 'flex') {
+            console.log(e.target.id);
+            if (e.target.id === 'close-popup') {
+                popup.style.display = 'none';
+                document.getElementById('comment-content').value = '';
+            }
+        }
+    });
+}
+
+function submitComment(articleId) {
+    const content = document.getElementById('comment-content').value.trim();
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+        alert('请登录后发表评论。');
+        return;
+    }
+    if (content === '') {
+        alert('评论内容不能为空。');
+        return;
+    }
+    if (content.length > 500) {
+        alert('评论内容不能超过 500 字符。');
+        return;
+    }
+    const userId = user.id;
+    // 发送 POST 请求到后端
+    fetch('/comment/addComment', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+            userId: userId,
+            articleId: articleId,
+            content: content
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code === 1) {
+            // 评论成功，刷新评论列表
+            fetchComments(articleId).then(comments => {
+                renderCommentsHierarchy(comments, document.getElementById('popup-comments'));
+                // 更新标题
+                document.getElementById('comment-title').textContent = `评论 (${comments.length} 条)`;
+                // 清空输入框
+                document.getElementById('comment-content').value = '';
+            });
+        } else {
+            // 显示错误信息
+            alert(data.message || '评论失败，请重试。');
+        }
+    })
+    .catch(error => {
+        console.error('评论错误:', error);
+        alert('评论失败，请检查网络连接。');
+    });
+}
 // 取消文章点赞
 async function unlikeArticle(articleId, likeIcon) {
     try {

@@ -27,6 +27,17 @@
   <div id="articles" class="articles-container">
     <!-- 文章卡片将动态插入这里 -->
   </div>
+  <div id="comment-popup" class="popup" style="display: none;">
+    <div class="popup-content">
+      <h4 id="comment-title">0条评论</h4>
+      <div id="popup-comments"></div>
+      <div id="comment-input">
+        <textarea id="comment-content" rows="4" placeholder="请输入评论"></textarea>
+        <button id="submit-comment">提交</button>
+      </div>
+      <button id="close-popup">关闭</button>
+    </div>
+  </div>
 </main>
 
 <!-- SweetAlert2 JS -->
