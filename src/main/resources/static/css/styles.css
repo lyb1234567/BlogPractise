@@ -209,19 +209,48 @@ main h1 {
     border-bottom: 1px solid #eee;
     padding: 15px 0;
 }
+/* 新增样式 */
+/* 根评论的子评论缩进 */
 .comment-children {
-    margin-left: 20px; /* 往右缩进 */
-    border-left: 1px solid #ccc; /* 打一个左边框或其他样式 */
-    padding-left: 10px;
+    margin-left: 20px;
+}
+
+.comment-children-nested {
+    margin-left: 0; /* 移除缩进 */
+    padding-left: 0; /* 移除内边距 */
+}
+/* 非根评论的子评论与父评论对齐 */
+.comment-item .userName + .arrow + .parentUserName {
+    display: inline;
+}
+
+/* 箭头样式 */
+.arrow {
+    margin: 0 5px;
+}
+
+/* 非根评论的子评论对齐样式 */
+.comment-item .userName {
+    display: inline;
+}
+
+.comment-item .arrow {
+    display: inline;
 }
 .comment:last-child {
     border-bottom: none;
 }
 
 .comment-item {
-    padding-left: 10px;
+    padding-left: 0; /* 移除内边距 */
+    margin-left: 0; /* 移除外边距 */
 }
-
+/* 子评论项样式 */
+.comment-children .comment-item,
+.comment-children-nested .comment-item {
+    padding-left: 0; /* 移除内边距 */
+    margin-left: 0; /* 移除外边距 */
+}
 .comment-item .userName {
     font-weight: 600;
     color: #555;

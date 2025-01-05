@@ -74,34 +74,29 @@ async function fetchComments(articleId) {
  * @param {Array} comments - 从后端拿到的评论数组
  * @returns {Array} 根评论数组，每个元素包含子评论（children）
  */
-function buildCommentTree(comments) {
-    // 用字典存所有评论，key=评论id
+function buildCommentTree(comments, parentId = 0) {
+    const roots = [];
     const map = {};
-    comments.forEach(c => {
-        // 初始化子评论数组
-        map[c.id] = { ...c, children: [] };
+
+    // 创建评论对象映射
+    comments.forEach(comment => {
+        map[comment.id] = { ...comment, children: [] };
     });
 
-    // 收集根评论
-    const rootComments = [];
-
-
-    comments.forEach(c => {
-        const current = map[c.id];
-        // 如果 parentId == 0，则是根评论
-        if (c.parentId === 0) {
-            rootComments.push(current);
+    // 构建树结构
+    comments.forEach(comment => {
+        if (comment.parentId === 0) {
+            roots.push(map[comment.id]);
         } else {
-            // 否则，放到父评论的 children 中
-            const parent = map[c.parentId];
-            if (parent) {
-                parent.children.push(current);
+            if (map[comment.parentId]) {
+                map[comment.parentId].children.push(map[comment.id]);
+                // 设置子评论的 parentUserName
+                map[comment.id].parentUserName = map[comment.parentId].userName;
             }
         }
     });
 
-
-    return rootComments;
+    return roots;
 }
 
 /**
@@ -109,37 +104,80 @@ function buildCommentTree(comments) {
  * @param {Object} commentNode - 带 children 的评论对象
  * @returns {HTMLElement} DOM节点
  */
-function renderCommentNode(commentNode , depth = 0) {
+function renderCommentNode(commentNode, depth = 0) {
     const commentItem = document.createElement('div');
     commentItem.className = 'comment-item';
 
-    // 评论内容，视你的字段情况作调整
-    // 这里假设后端返回了 authorName, content, createTime
-    commentItem.innerHTML = `
-        <p>
-            <img src="${commentNode.userAvatar}"
-                 alt="${commentNode.authorName}'s avatar"
-                 class="comment-avatar">
-            <strong class="userName">${escapeHTML(commentNode.userName || '')}</strong>
-        </p>
-        <p class = "comment-content">
-            ${escapeHTML(commentNode.content || '')}
-        </p>
-        <p class="comment-date">
-              ${commentNode.creationDate ? new Date(commentNode.creationDate).toLocaleDateString() : ''}
-        </p>
-    `;
+    if (depth === 0) {
+        // 根评论
+        commentItem.innerHTML = `
+            <p>
+                <img src="${commentNode.userAvatar}"
+                     alt="${commentNode.authorName}'s avatar"
+                     class="comment-avatar">
+                <strong class="userName">${escapeHTML(commentNode.userName || '')}</strong>
+            </p>
+            <p class="comment-content">
+                ${escapeHTML(commentNode.content || '')}
+            </p>
+            <p class="comment-date">
+                    ${commentNode.creationDate ? new Date(commentNode.creationDate).toLocaleDateString() : ''}
+            </p>
+        `;
+    } else if (depth === 1)  // 子评论
+    {
+        // 非根评论
+        commentItem.innerHTML = `
+            <p>
+                <img src="${commentNode.userAvatar}"
+                     alt="${commentNode.authorName}'s avatar"
+                     class="comment-avatar">
+                <strong class="userName">${escapeHTML(commentNode.userName || '')}</strong>
+            </p>
+            <p class="comment-content">
+                ${escapeHTML(commentNode.content || '')}
+            </p>
+            <p class="comment-date">
+                    ${commentNode.creationDate ? new Date(commentNode.creationDate).toLocaleDateString() : ''}
+            </p>
+        `;
+    }
+    else if(depth>1)
+    {
+          commentItem.innerHTML = `
+            <p>
+                <img src="${commentNode.userAvatar}"
+                     alt="${commentNode.authorName}'s avatar"
+                     class="comment-avatar">
+                <strong class="userName">${escapeHTML(commentNode.userName || '')}</strong>
+                <span class="arrow">➤</span>
+                <strong class="parentUserName">${escapeHTML(commentNode.parentUserName || '')}</strong>
+            </p>
+              <p class="comment-content">
+                  ${escapeHTML(commentNode.content || '')}
+              </p>
+              <p class="comment-date">
+                      ${commentNode.creationDate ? new Date(commentNode.creationDate).toLocaleDateString() : ''}
+              </p>
+          `;
+    }
 
-
-    // 如果有子评论，递归渲染
-    if (commentNode.children && commentNode.children.length > 0 ) {
+    // 渲染子评论
+    if (commentNode.children && commentNode.children.length > 0) {
         const childrenContainer = document.createElement('div');
-        childrenContainer.className = 'comment-children';
+        if ((depth+1)===1)
+        {
+            childrenContainer.className = 'comment-children';
+        }
+        if ((depth+1)>1)
+        {
+           childrenContainer.className = 'comment-children-nested';
+        }
         commentNode.children.forEach(child => {
-            const childDepth = depth + 1; // 子评论的深度加 1
-            const childEl = renderCommentNode(child,depth);
+            const childEl = renderCommentNode(child, depth + 1);
             childrenContainer.appendChild(childEl);
         });
+
         commentItem.appendChild(childrenContainer);
     }
 
