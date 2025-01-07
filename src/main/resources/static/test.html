@@ -2,76 +2,381 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>评论展示 Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>评论层级渲染示例</title>
   <style>
-    /* 外层容器：模拟一条评论 */
-    .comment-item {
-      position: relative;  /* 使内部绝对定位基于这个元素 */
-      width: 400px;        /* 示例宽度，可以根据需求调整 */
-      margin: 20px auto;   /* 让 Demo 居中显示 */
-      padding: 40px 10px;  /* 给容器顶部/底部预留空间 */
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background-color: #fafafa;
-    }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        .comment-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        .comment-item .comment-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .comment-item .userName {
+            font-weight: bold;
+            color: #333;
+        }
+        .comment-item .comment-content {
+            margin: 5px 0;
+            color: #555;
+        }
+        .comment-item .comment-date {
+            font-size: 12px;
+            color: #999;
+            display: inline-block; /* 使创建时间和回复按钮在同一行 */
+        }
+        .comment-item .reply-button {
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            margin-left: 10px; /* 与创建时间的间距 */
+            display: inline-block; /* 使回复按钮与创建时间在同一行 */
+        }
+        .comment-item .reply-button:hover {
+            color: #333; /* 鼠标悬停时变色 */
+        }
+        .comment-item .comment-children {
+            margin-left: 20px; /* 直接子评论缩进 */
+        }
+        .comment-item .comment-children-nested {
+            margin-left: 0; /* 嵌套子评论不缩进 */
+            padding-left: 0; /* 确保嵌套子评论没有额外缩进 */
+        }
+        .comment-item .arrow {
+            margin: 0 5px;
+            color: #666;
+        }
+        .comment-item .userName + .arrow + .parentUserName {
+            display: inline; /* 确保父评论用户名与箭头在同一行 */
+        }
+        /* 为嵌套评论项添加实线边框 */
+        .comment-children .comment-item,
+        .comment-children-nested .comment-item {
+            padding-left: 0; /* 移除内边距 */
+            margin-left: 0; /* 移除外边距 */
+        }
+        .reply-dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: 300px; /* 固定对话框宽度 */
+            box-sizing: border-box; /* 确保 padding 不会增加宽度 */
+        }
 
-    /* 评论的主要内容 */
-    .comment-content {
-      margin-bottom: 20px; /* 与容器底部留点距离，视觉上更清晰 */
-    }
+        .reply-dialog h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+        }
 
-    /* 左下角：评论创建时间 */
-    .comment-time {
-      position: absolute;
-      left: 10px;
-      bottom: 10px;
-      font-size: 14px;
-      color: #666;
-    }
+        .reply-dialog input,
+        .reply-dialog textarea {
+            width: 100%; /* 宽度占满父容器 */
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* 确保 padding 不会增加宽度 */
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
 
-    /* 右下角：回复按钮 */
-    .comment-reply {
-      position: absolute;
-      right: 10px;
-      bottom: 10px;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 4px;
-      background-color: #1976d2;
-      color: #fff;
-      cursor: pointer;
-    }
+        .reply-dialog textarea {
+            height: 100px; /* 设置文本区域的高度 */
+            resize: vertical; /* 允许用户垂直调整高度 */
+        }
 
-    .comment-reply:hover {
-      background-color: #1565c0;
-    }
-  </style>
+        .reply-dialog .dialog-buttons {
+            display: flex;
+            justify-content: flex-end; /* 按钮右对齐 */
+            gap: 10px; /* 按钮之间的间距 */
+        }
+
+        .reply-dialog button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .reply-dialog button:hover {
+            background-color: #0056b3;
+        }
+
+        .reply-dialog button#cancel-reply {
+            background-color: #6c757d;
+        }
+
+        .reply-dialog button#cancel-reply:hover {
+            background-color: #5a6268;
+        }
+
+    </style>
 </head>
 <body>
+<h1>评论层级渲染示例</h1>
+<div id="comments-container"></div>
 
-<h1 style="text-align: center;">评论展示 Demo</h1>
-
-<!-- 第一条评论 -->
-<div class="comment-item">
-  <div class="comment-content">
-    这里是某条评论的主要内容。<br>
-    你可以自由调整评论内容的高度，看看是否会影响底部对齐效果。<br>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dictum magna at ex feugiat tristique.
+<!-- 回复对话框 -->
+<div class="overlay" id="overlay"></div>
+<div class="reply-dialog" id="reply-dialog">
+  <h3>回复评论</h3>
+  <input type="text" id="reply-username" placeholder="请输入用户名">
+  <textarea id="reply-content" placeholder="请输入回复内容"></textarea>
+  <div class="dialog-buttons">
+    <button id="submit-reply">提交</button>
+    <button id="cancel-reply">取消</button>
   </div>
-  <div class="comment-time">2025-01-01 12:34</div>
-  <button class="comment-reply">回复</button>
 </div>
 
-<!-- 第二条评论 -->
-<div class="comment-item">
-  <div class="comment-content">
-    这是另一条评论，你也可以自行复制多条，测试布局效果。<br>
-    Lorem ipsum dolor sit amet.
-  </div>
-  <div class="comment-time">2025-01-02 11:00</div>
-  <button class="comment-reply">回复</button>
-</div>
+<script>
+        // 模拟评论数据
+        let comments = [
+            { id: 1, parentId: 0, userName: "用户A", content: "这是根评论1", creationDate: "2023-10-01" },
+            { id: 2, parentId: 1, userName: "用户B", content: "这是对评论1的回复", creationDate: "2023-10-02" },
+            { id: 3, parentId: 2, userName: "用户C", content: "这是对回复的回复", creationDate: "2023-10-03" },
+            { id: 4, parentId: 0, userName: "用户D", content: "这是根评论2", creationDate: "2023-10-04" },
+            { id: 5, parentId: 4, userName: "用户E", content: "这是对评论2的回复", creationDate: "2023-10-05" },
+            { id: 6, parentId: 3, userName: "用户F", content: "这是对评论2的直接子评论的回复", creationDate: "2023-10-05" },
+            { id: 7, parentId: 6, userName: "用户G", content: "这是对用户F的回复", creationDate: "2023-10-06" },
+            { id: 8, parentId: 1, userName: "用户H", content: "这是对评论1的另一个回复", creationDate: "2023-10-07" },
+            { id: 9, parentId: 8, userName: "用户I", content: "这是对用户H的回复", creationDate: "2023-10-08" },
+        ];
 
+        // 当前选中的评论 ID
+        let currentCommentId = null;
+
+        /**
+         * 将扁平的评论数据构建成树状结构
+         * @param {Array} comments - 评论数组
+         * @returns {Array} 根评论数组
+         */
+        function buildCommentTree(comments) {
+            const map = {};
+            const roots = [];
+
+            // 创建评论对象映射
+            comments.forEach(comment => {
+                map[comment.id] = { ...comment, children: [] };
+            });
+
+            // 构建树结构
+            comments.forEach(comment => {
+                if (comment.parentId === 0) {
+                    roots.push(map[comment.id]); // 根评论
+                } else {
+                    if (map[comment.parentId]) {
+                        map[comment.parentId].children.push(map[comment.id]); // 子评论
+                        map[comment.id].parentUserName = map[comment.parentId].userName; // 设置父评论用户名
+                    }
+                }
+            });
+
+            return roots;
+        }
+
+        /**
+         * 递归渲染一条评论及其子评论
+         * @param {Object} commentNode - 评论节点
+         * @param {number} depth - 当前深度
+         * @returns {HTMLElement} 评论的 DOM 元素
+         */
+        function renderCommentNode(commentNode, depth = 0) {
+            const commentItem = document.createElement("div");
+            commentItem.className = "comment-item";
+
+            // 渲染评论内容
+            if (depth === 0) {
+                // 根评论
+                commentItem.innerHTML = `
+                    <p>
+                        <img src="https://via.placeholder.com/30" alt="${commentNode.userName}的头像" class="comment-avatar">
+                        <strong class="userName">${commentNode.userName}</strong>
+                    </p>
+                    <p class="comment-content">${commentNode.content}</p>
+                    <p>
+                        <span class="comment-date">${commentNode.creationDate}</span>
+                        <span class="reply-button" data-comment-id="${commentNode.id}" title="回复">💬 回复</span>
+                    </p>
+                `;
+            } else if (depth === 1) {
+                // 直接子评论
+                commentItem.innerHTML = `
+                    <p>
+                        <img src="https://via.placeholder.com/30" alt="${commentNode.userName}的头像" class="comment-avatar">
+                        <strong class="userName">${commentNode.userName}</strong>
+                    </p>
+                    <p class="comment-content">${commentNode.content}</p>
+                    <p>
+                        <span class="comment-date">${commentNode.creationDate}</span>
+                        <span class="reply-button" data-comment-id="${commentNode.id}" title="回复">💬 回复</span>
+                    </p>
+                `;
+            } else if (depth > 1) {
+                // 嵌套子评论
+                commentItem.innerHTML = `
+                    <p>
+                        <img src="https://via.placeholder.com/30" alt="${commentNode.userName}的头像" class="comment-avatar">
+                        <strong class="userName">${commentNode.userName}</strong>
+                        <span class="arrow">➤</span>
+                        <strong class="parentUserName">${commentNode.parentUserName}</strong>
+                    </p>
+                    <p class="comment-content">${commentNode.content}</p>
+                    <p>
+                        <span class="comment-date">${commentNode.creationDate}</span>
+                        <span class="reply-button" data-comment-id="${commentNode.id}" title="回复">💬 回复</span>
+                    </p>
+                `;
+            }
+
+            // 渲染子评论
+            if (commentNode.children && commentNode.children.length > 0) {
+                const childrenContainer = document.createElement("div");
+                if (depth === 0) {
+                    childrenContainer.className = "comment-children"; // 直接子评论缩进
+                } else if (depth >= 1) {
+                    childrenContainer.className = "comment-children-nested"; // 嵌套子评论不缩进
+                }
+
+                commentNode.children.forEach(child => {
+                    const childEl = renderCommentNode(child, depth + 1);
+                    childrenContainer.appendChild(childEl);
+                });
+
+                commentItem.appendChild(childrenContainer);
+            }
+
+            return commentItem;
+        }
+
+        /**
+         * 渲染评论层级结构
+         * @param {Array} comments - 评论数组
+         * @param {HTMLElement} container - 评论容器
+         */
+        function renderCommentsHierarchy(comments, container) {
+            container.innerHTML = ""; // 清空容器
+
+            if (!comments || comments.length === 0) {
+                container.innerHTML = "<p>暂无评论</p>";
+                return;
+            }
+
+            // 构建评论树并渲染
+            const roots = buildCommentTree(comments);
+            roots.forEach(root => {
+                const rootEl = renderCommentNode(root);
+                container.appendChild(rootEl);
+            });
+
+            // 绑定回复按钮点击事件
+            const replyButtons = document.querySelectorAll(".reply-button");
+            replyButtons.forEach(button => {
+                button.addEventListener("click", () => {
+                    currentCommentId = button.getAttribute("data-comment-id");
+                    showReplyDialog();
+                });
+            });
+        }
+
+        /**
+         * 显示回复对话框
+         */
+        function showReplyDialog() {
+            const dialog = document.getElementById("reply-dialog");
+            const overlay = document.getElementById("overlay");
+            dialog.style.display = "block";
+            overlay.style.display = "block";
+        }
+
+        /**
+         * 隐藏回复对话框
+         */
+        function hideReplyDialog() {
+            const dialog = document.getElementById("reply-dialog");
+            const overlay = document.getElementById("overlay");
+            dialog.style.display = "none";
+            overlay.style.display = "none";
+        }
+
+        /**
+         * 提交回复
+         */
+        function submitReply() {
+            const username = document.getElementById("reply-username").value.trim();
+            const content = document.getElementById("reply-content").value.trim();
+
+            if (!username || !content) {
+                alert("用户名和回复内容不能为空！");
+                return;
+            }
+
+            // 生成新的评论
+            const newComment = {
+                id: comments.length + 1,
+                parentId: parseInt(currentCommentId),
+                userName: username,
+                content: content,
+                creationDate: new Date().toLocaleDateString(),
+            };
+
+            // 插入到comments数组的相应位置
+            if (newComment.parentId === 0) {
+                // 新的根评论，插入到最前面
+                comments.unshift(newComment);
+            } else {
+                // 找到父评论，并将其插入到父评论的子评论列表的最前面
+                const parentComment = comments.find(c => c.id === newComment.parentId);
+                if (parentComment) {
+                    // 重新排列父评论的子评论，将新评论放在最前面
+                    comments = comments.filter(c => c.id !== newComment.id);
+                    comments.splice(comments.indexOf(parentComment) + 1, 0, newComment);
+                } else {
+                    // 如果父评论不存在，将其作为根评论插入
+                    comments.unshift(newComment);
+                }
+            }
+
+            // 重新渲染评论
+            const commentsContainer = document.getElementById("comments-container");
+            renderCommentsHierarchy(comments, commentsContainer);
+
+            // 隐藏对话框
+            hideReplyDialog();
+
+            // 清空输入框
+            document.getElementById("reply-username").value = "";
+            document.getElementById("reply-content").value = "";
+        }
+
+        // 初始化渲染
+        const commentsContainer = document.getElementById("comments-container");
+        renderCommentsHierarchy(comments, commentsContainer);
+
+        // 绑定提交和取消按钮事件
+        document.getElementById("submit-reply").addEventListener("click", submitReply);
+        document.getElementById("cancel-reply").addEventListener("click", hideReplyDialog);
+    </script>
 </body>
 </html>

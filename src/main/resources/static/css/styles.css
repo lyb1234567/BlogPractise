@@ -225,7 +225,19 @@ main h1 {
 .comment-item .userName + .arrow + .parentUserName {
     display: inline;
 }
-
+.comment-icon:hover {
+     transform: scale(1.2); /* 放大效果 */
+}
+.reply-button
+{
+    cursor: pointer; /* 鼠标悬停时显示为手型指针，表示可点击 */
+    transition: color 0.3s ease; /* 颜色变化的过渡效果，持续 0.3 秒，使用 ease 缓动函数 */
+    color: #777; /* 未点赞时的图标颜色，深灰色 */
+}
+.reply-button:hover
+{
+  transform: scale(1.2); /* 放大效果 */
+}
 /* 箭头样式 */
 .arrow {
     margin: 0 5px;
@@ -280,6 +292,11 @@ main h1 {
     font-size: 1.5em;
     margin-bottom: 15px;
     color: #333;
+}
+.comment-footer {
+    display: flex;
+    align-items: center;
+    gap: 50px; /* 控制间距 */
 }
 .popup {
     position: fixed;

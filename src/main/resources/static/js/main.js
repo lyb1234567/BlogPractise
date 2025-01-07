@@ -120,8 +120,9 @@ function renderCommentNode(commentNode, depth = 0) {
             <p class="comment-content">
                 ${escapeHTML(commentNode.content || '')}
             </p>
-            <p class="comment-date">
-                    ${commentNode.creationDate ? new Date(commentNode.creationDate).toLocaleDateString() : ''}
+            <p class="comment-footer">
+                <span class="comment-date">${commentNode.creationDate}</span>
+                <span class="reply-button" data-comment-id="${commentNode.id}" title="回复">💬 回复</span>
             </p>
         `;
     } else if (depth === 1)  // 子评论
@@ -137,8 +138,9 @@ function renderCommentNode(commentNode, depth = 0) {
             <p class="comment-content">
                 ${escapeHTML(commentNode.content || '')}
             </p>
-            <p class="comment-date">
-                    ${commentNode.creationDate ? new Date(commentNode.creationDate).toLocaleDateString() : ''}
+            <p class="comment-footer">
+                <span class="comment-date">${commentNode.creationDate}</span>
+                <span class="reply-button" data-comment-id="${commentNode.id}" title="回复">💬 回复</span>
             </p>
         `;
     }
@@ -156,9 +158,10 @@ function renderCommentNode(commentNode, depth = 0) {
               <p class="comment-content">
                   ${escapeHTML(commentNode.content || '')}
               </p>
-              <p class="comment-date">
-                      ${commentNode.creationDate ? new Date(commentNode.creationDate).toLocaleDateString() : ''}
-              </p>
+            <p class="comment-footer">
+                <span class="comment-date">${commentNode.creationDate}</span>
+                <span class="reply-button" data-comment-id="${commentNode.id}" title="回复">💬 回复</span>
+            </p>
           `;
     }
 
@@ -204,6 +207,15 @@ function renderCommentsHierarchy(comments, container) {
         const rootEl = renderCommentNode(root);
         container.appendChild(rootEl);
     });
+
+    // 绑定回复按钮点击事件
+    const replyButtons = document.querySelectorAll(".reply-button");
+    replyButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            currentCommentId = button.getAttribute("data-comment-id");
+//            TODO: 跳转到评论编辑页并带上被回复的评论 ID ，需要参数artilceId和commentId
+        });
+    }); // 这里补全了缺少的括号
 }
 
 async function renderArticles(articles) {
@@ -320,7 +332,6 @@ function showCommentPopup(comments, articleId) {
     document.addEventListener('click', (e) => {
         const popup = document.getElementById('comment-popup');
         if (popup && popup.style.display === 'flex') {
-            console.log(e.target.id);
             if (e.target.id === 'close-popup') {
                 popup.style.display = 'none';
                 document.getElementById('comment-content').value = '';
