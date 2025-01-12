@@ -192,7 +192,7 @@ function renderCommentNode(commentNode, depth = 0) {
  * @param {Array} comments - 扁平评论数组
  * @param {HTMLElement} container - 评论容器
  */
-function renderCommentsHierarchy(comments, container) {
+async function renderCommentsHierarchy(comments, container, articleId) {
     container.innerHTML = ''; // 清空原有内容
 
     if (!comments || comments.length === 0) {
@@ -209,13 +209,135 @@ function renderCommentsHierarchy(comments, container) {
     });
 
     // 绑定回复按钮点击事件
-    const replyButtons = document.querySelectorAll(".reply-button");
+    const replyButtons = container.querySelectorAll('.reply-button'); // Scoped to container
+    let activeReplyForm = null; // To keep track of the currently open reply form
+
     replyButtons.forEach(button => {
         button.addEventListener("click", () => {
-            currentCommentId = button.getAttribute("data-comment-id");
-//            TODO: 跳转到评论编辑页并带上被回复的评论 ID ，需要参数artilceId和commentId
+            // Close any open reply form
+            if (activeReplyForm) {
+                activeReplyForm.remove();
+                activeReplyForm = null;
+            }
+
+            const currentCommentId = +button.getAttribute("data-comment-id");
+            const replyForm = document.createElement('form');
+            replyForm.classList.add('reply-form'); // Add a CSS class for styling
+
+            replyForm.innerHTML = `
+                <textarea placeholder="输入你的回复..." required></textarea>
+                <div class="reply-form-actions">
+                    <button type="submit" class="submit-reply">提交回复</button>
+                    <button type="button" class="cancel-reply">取消</button>
+                </div>
+            `;
+
+            // Insert the reply form after the button's parent node
+            button.parentNode.insertBefore(replyForm, button.nextSibling);
+            activeReplyForm = replyForm;
+
+            // Handle form submission
+            replyForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const content = replyForm.querySelector('textarea').value.trim();
+
+                if (!content) {
+                    alert('回复内容不能为空');
+                    return;
+                }
+
+                try {
+                    const newComment = await insertComment(articleId, currentCommentId, content);
+                    // Optionally, you can append the new comment without fetching all comments
+                    // renderNewComment(newComment, container);
+
+                    // Re-fetch and render comments
+                    const updatedComments = await fetchComments(articleId);
+                    renderCommentsHierarchy(updatedComments, container, articleId);
+//                    更新评论区头顶显示评论数
+                    document.getElementById('comment-title').textContent = `评论  ${updatedComments.length} 条 `;
+
+//                    更新文章卡片上展示的评论数
+                    const commentIcon = document.querySelector(`.comment-icon[data-article-id="${articleId}"]`);
+                    if (commentIcon) {
+                        commentIcon.innerHTML = `💬 ${updatedComments.length}`;
+                    }
+
+
+                } catch (error) {
+                    console.error('回复失败:', error);
+                    alert('回复失败，请重试');
+                }
+
+                // Remove the reply form after submission
+                replyForm.remove();
+                activeReplyForm = null;
+            });
+
+            // Handle form cancellation
+            const cancelButton = replyForm.querySelector('.cancel-reply');
+            cancelButton.addEventListener('click', () => {
+                replyForm.remove();
+                activeReplyForm = null;
+            });
+
+            // Optional: Focus the textarea for better UX
+            replyForm.querySelector('textarea').focus();
         });
-    }); // 这里补全了缺少的括号
+    }); // <-- Correctly closed forEach with '});'
+}
+
+
+
+/**
+ * 插入新评论
+ * @param {number} articleId - 文章ID
+ * @param {number} parentId - 父评论ID，如果是顶级评论则为0
+ * @param {string} content - 评论内容
+ * @returns {Promise<Object>} 返回包含新评论信息的Promise
+ */
+async function insertComment(articleId, parentId, content) {
+    // 从本地存储中取出用户信息
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+        throw new Error('用户未登录');
+    }
+
+    // 准备要发送的参数
+    const userId = user.id;
+
+    try {
+        // 使用 URLSearchParams 构建表单数据
+        const formData = new URLSearchParams();
+        formData.append('userId', userId);
+        formData.append('articleId', articleId);
+        formData.append('content', content);
+        formData.append('parentId', parentId);
+
+        // 发起请求
+        const response = await fetch('/comment/insertComment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            // 注意 body 使用了 formData.toString() 而不是 JSON.stringify
+            body: formData.toString()
+        });
+
+        // 解析返回结果
+        const result = await response.json();
+        if (response.ok && result.code === 1) {
+            // 如果请求成功且后端返回的 code === 1，则返回评论数据
+            return result.data;
+        } else {
+            // 否则抛出错误供上层处理
+            throw new Error(result.message || '插入评论失败');
+        }
+    } catch (error) {
+        console.error('插入评论错误:', error);
+        throw error;
+    }
 }
 
 async function renderArticles(articles) {
@@ -237,6 +359,7 @@ async function renderArticles(articles) {
     for (const article of articles) {
         const card = document.createElement('div');
         card.className = 'article-card';
+        card.id = `article-${article.id}`; // 添加唯一id
 
         // 1. 获取点赞用户，判断当前用户是否已点赞
         const likedUsers = await fetchLikedUsers(article.id);
@@ -295,7 +418,7 @@ async function renderArticles(articles) {
             // 获取当前文章的评论数据
             const comments = await fetchComments(article.id);
             // 显示弹窗并渲染评论
-            showCommentPopup(comments);
+            showCommentPopup(comments,article.id);
         });
 
         // 把卡片加到列表容器
@@ -315,7 +438,7 @@ function showCommentPopup(comments, articleId) {
     popupTitle.textContent = `${comments.length}条评论`;
 
     // 渲染新的评论内容
-    renderCommentsHierarchy(comments, popupComments);
+    renderCommentsHierarchy(comments, popupComments,articleId);
 
     // 设置 articleId 到 popup 的 data 属性
     popup.dataset.articleId = articleId;
@@ -340,13 +463,27 @@ function showCommentPopup(comments, articleId) {
     });
 }
 
-function submitComment(articleId) {
+/**
+ * 提交评论或回复
+ * @param {number} articleId - 文章ID
+ * @param {number} parentId - 父评论ID，如果是顶级评论则为0
+ */
+function submitComment(articleId, parentId = 0) {
+    // 获取评论内容
     const content = document.getElementById('comment-content').value.trim();
+
+    // 获取用户信息
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user) {
         alert('请登录后发表评论。');
         return;
     }
+    const userId = user.id;
+
+    // 调试日志
+    console.log('Submitting comment:', { articleId, parentId, userId, content });
+
+    // 表单验证
     if (content === '') {
         alert('评论内容不能为空。');
         return;
@@ -355,41 +492,39 @@ function submitComment(articleId) {
         alert('评论内容不能超过 500 字符。');
         return;
     }
-    const userId = user.id;
-    // 发送 POST 请求到后端
-    fetch('/comment/addComment', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-            userId: userId,
-            articleId: articleId,
-            content: content
+
+    // 调用 insertComment 函数提交评论
+    insertComment(articleId, parentId, content)
+        .then(data => {
+            if (data) {
+                // 评论成功，刷新评论列表
+                fetchComments(articleId).then(updatedComments => {
+                    // 重新渲染评论层级结构
+                    renderCommentsHierarchy(updatedComments, document.getElementById('popup-comments'), articleId);
+
+                    // 更新弹窗中的评论数量
+                    document.getElementById('comment-title').textContent = `评论 ${updatedComments.length} 条`;
+
+                    // 更新对应文章卡片上的评论数量
+                    const commentIcon = document.querySelector(`.comment-icon[data-article-id="${articleId}"]`);
+                    if (commentIcon) {
+                        commentIcon.innerHTML = `💬 ${updatedComments.length}`;
+                    }
+
+                    // 清空输入框
+                    document.getElementById('comment-content').value = '';
+                });
+            } else {
+                // 显示错误信息
+                alert('评论失败，请重试。');
+            }
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.code === 1) {
-            // 评论成功，刷新评论列表
-            fetchComments(articleId).then(comments => {
-                renderCommentsHierarchy(comments, document.getElementById('popup-comments'));
-                // 更新标题
-                document.getElementById('comment-title').textContent = `评论 (${comments.length} 条)`;
-                // 清空输入框
-                document.getElementById('comment-content').value = '';
-            });
-        } else {
-            // 显示错误信息
-            alert(data.message || '评论失败，请重试。');
-        }
-    })
-    .catch(error => {
-        console.error('评论错误:', error);
-        alert('评论失败，请检查网络连接。');
-    });
+        .catch(error => {
+            console.error('评论错误:', error);
+            alert('评论失败，请检查网络连接。');
+        });
 }
+
 // 取消文章点赞
 async function unlikeArticle(articleId, likeIcon) {
     try {

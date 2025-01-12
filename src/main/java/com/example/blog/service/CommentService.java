@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface CommentService {
     List<Comment> getCommentsByArticleId(int articleId);
+
+    Comment insertComment(int userId, int articleId, String content, int parentId);
 }

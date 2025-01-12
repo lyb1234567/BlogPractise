@@ -1,10 +1,7 @@
 package com.example.blog.mapper;
 
 import com.example.blog.entity.Comment;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -23,4 +20,10 @@ public interface CommentMapper {
             // 添加其他需要映射的字段
     })
     List<Comment> getCommentsByArticleId(int articleId);
+
+
+    @Insert("INSERT INTO comment (user_id, content, parent_id, article_id, creation_date) " +
+            "VALUES (#{userId}, #{content}, #{parentId}, #{articleId}, #{creationDate})")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
+    void insert(Comment comment);
 }
