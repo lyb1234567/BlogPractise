@@ -1,55 +1,325 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>文章详情</title>
-  <!-- 引入Google字体 -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <!-- 引入Font Awesome图标库 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papP4KYkzWfxhL7vFObI1K1pJ54KwOj7VnC1TQwTmDsbw5e6O4wWkWCCRFtjpU9X0n4Fm5Eus1P5V+d2IcTQdg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- 引入CSS文件 -->
-  <link rel="stylesheet" href="styles.css">
+  <!-- 引入样式 -->
+  <style>
+    /* ============ 全局与重置 ============ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      background-color: #f6f6f8;
+      color: #333;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* ============ 导航栏 ============ */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+      color: #fff;
+    }
+    .nav-left .logo {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+    .nav-right a,
+    .nav-right button {
+      margin-left: 1.2rem;
+      color: #fff;
+      text-decoration: none;
+      background: none;
+      border: none;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+    .nav-right a:hover,
+    .nav-right button:hover {
+      opacity: 0.8;
+    }
+
+    /* ============ 文章内容区 ============ */
+    .article-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+    .article-container h1 {
+      font-size: 2rem;
+      color: #4c4cff;
+      margin-bottom: 1rem;
+    }
+    .article-container .author {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+    .article-container .content {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #555;
+    }
+    .article-container .not-found {
+      font-size: 1.2rem;
+      color: #ff4c4c;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    /* ============ 评论区样式 ============ */
+    .comments-section {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+    #comment-title {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+    .comment-item {
+      margin-bottom: 1rem;
+      border-left: 2px solid #ccc;
+      padding-left: 1rem;
+    }
+    .comment-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+    .comment-footer {
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .reply-button {
+      margin-left: 1rem;
+      cursor: pointer;
+      color: #4c4cff;
+    }
+    .view-replies-btn {
+      background-color: transparent;
+      border: none;
+      color: #0066cc; /* 文字颜色，可根据你的主题风格调整 */
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0;
+      margin: 4px 0;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .view-replies-btn:hover {
+      text-decoration: underline;
+    }
+    .comment-children {
+      margin-left: 1rem; /* 第一层子评论偏移 */
+      border-left: 2px dashed #c2c2f0;
+      padding-left: 1rem;
+    }
+    .comment-children-nested {
+      margin-left: 1rem; /* 更深层级偏移 */
+      border-left: 2px dashed #e0e0e0;
+      padding-left: 1rem;
+    }
+    .arrow {
+      margin: 0 0.2rem;
+      color: #999;
+    }
+    .reply-form {
+      margin-top: 0.5rem;
+    }
+    .reply-form textarea {
+      width: 100%;
+      min-height: 60px;
+      resize: vertical;
+      padding: 0.5rem;
+    }
+    .reply-form-actions {
+      margin-top: 0.5rem;
+    }
+    .reply-form-actions button {
+      margin-right: 0.5rem;
+      padding: 0.4rem 0.8rem;
+    }
+
+    /* ============ 折叠按钮与隐藏子评论 ============ */
+    .collapse-button {
+      margin-left: 0.8rem;
+      cursor: pointer;
+      color: #999;
+      font-size: 0.85rem;
+      user-select: none; /* 避免选中文字 */
+    }
+    .hidden {
+      display: none !important;
+    }
+
+    /* ============ 输入评论框样式 ============ */
+    #comment-input {
+      max-width: 800px;
+      margin: 1rem auto 2rem; /* 距离评论区一点间隔 */
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      padding: 1rem;
+    }
+    #comment-input textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+      margin-bottom: 0.5rem;
+      outline: none;
+    }
+    #comment-input button {
+      align-self: flex-end;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      background-color: #4c4cff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    #comment-input button:hover {
+      background-color: #3333cc;
+    }
+
+    /* ============ 暗色主题 ============ */
+    body.dark-theme {
+      background-color: #222;
+      color: #ddd;
+    }
+    body.dark-theme .navbar {
+      background: linear-gradient(45deg, #1e1e1e, #2f2f2f);
+    }
+    body.dark-theme .logo {
+      color: #ddd !important;
+    }
+    body.dark-theme .nav-right a,
+    body.dark-theme .nav-right button {
+      color: #ddd;
+    }
+    body.dark-theme .article-container {
+      background-color: #2f2f2f;
+      box-shadow: none;
+    }
+    body.dark-theme .article-container h1 {
+      color: #6c5ce7;
+    }
+    body.dark-theme .article-container .author {
+      color: #aaa;
+    }
+    body.dark-theme .article-container .content {
+      color: #ccc;
+    }
+    body.dark-theme .comments-section {
+      background-color: #2f2f2f;
+      box-shadow: none;
+    }
+    body.dark-theme .comment-item {
+      border-left: 2px solid #555;
+    }
+    body.dark-theme .comment-children {
+      border-left: 2px dashed #777;
+    }
+    body.dark-theme .comment-children-nested {
+      border-left: 2px dashed #666;
+    }
+    body.dark-theme .reply-button {
+      color: #6c5ce7;
+    }
+    body.dark-theme .comment-footer {
+      color: #999;
+    }
+    body.dark-theme .collapse-button {
+      color: #ccc;
+    }
+    body.dark-theme .view-replies-btn {
+      color: #66b2ff;
+    }
+    body.dark-theme .view-replies-btn:hover {
+      text-decoration: underline;
+    }
+    /* 暗色主题下的输入框样式 */
+    body.dark-theme #comment-input {
+      background-color: #2f2f2f;
+      box-shadow: none;
+    }
+    body.dark-theme #comment-input textarea {
+      background-color: #3a3a3a;
+      color: #ddd;
+      border-color: #555;
+    }
+    body.dark-theme #comment-input button {
+      background-color: #6c5ce7;
+    }
+    body.dark-theme #comment-input button:hover {
+      background-color: #4e3cd7;
+    }
+  </style>
 </head>
 <body>
-<header class="header">
-  <div class="container">
-    <h1 class="logo">我的博客</h1>
-    <nav class="nav">
-      <a href="index.html" class="nav-link">首页</a>
-      <!-- 可以根据需要添加更多导航链接 -->
-    </nav>
+<!-- ========= 导航栏 ========= -->
+<header class="navbar">
+  <div class="nav-left">
+    <a href="#" class="logo">我的博客</a>
+  </div>
+  <div class="nav-right">
+    <a href="index.html">首页</a>
+    <a href="#articles">文章</a>
+    <a href="#about">关于</a>
+    <a href="#contact">联系</a>
+    <button id="toggleThemeBtn">切换主题</button>
   </div>
 </header>
 
-<main class="main-content">
-  <div id="article-container" class="article-container">
-    <!-- 文章详情将被渲染在这里 -->
-  </div>
+<!-- ========= 文章内容区 ========= -->
+<div class="article-container">
+  <h1 id="articleTitle">加载中...</h1>
+  <div class="author" id="articleAuthor">作者：加载中...</div>
+  <div class="content" id="articleContent">内容加载中...</div>
+  <div class="not-found" id="articleNotFound" style="display: none;">文章不存在</div>
+</div>
 
-  <div id="comments-section" class="comments-section">
-    <h2>评论</h2>
-    <div id="comments-list" class="comments-list">
-      <!-- 评论列表将被渲染在这里 -->
-    </div>
+<!-- ========= 评论区 ========= -->
+<div class="comments-section" id="commentsSection">
+  <h2 id="comment-title">暂无评论</h2>
+  <div id="commentList"></div>
+</div>
 
-    <div id="comment-form-container" class="comment-form-container">
-      <h3>发表你的评论</h3>
-      <form id="comment-form">
-        <textarea id="comment-content" name="content" rows="4" placeholder="请输入你的评论..." required></textarea>
-        <button type="submit" class="submit-button">提交评论</button>
-      </form>
-    </div>
-  </div>
-</main>
+<!-- ========= 输入评论框 ========= -->
+<div id="comment-input">
+  <textarea id="comment-content" rows="4" placeholder="请输入评论"></textarea>
+  <button id="submit-comment">提交</button>
+</div>
 
-<footer class="footer">
-  <div class="container">
-    <p>&copy; 2024 我的博客. 版权所有.</p>
-  </div>
-</footer>
-
-<!-- 引入JavaScript文件 -->
+<!-- ========= JavaScript ========= -->
 <script src="js/article.js"></script>
 </body>
 </html>

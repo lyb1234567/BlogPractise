@@ -16,4 +16,6 @@ public interface UserService {
     String getAvatar(int userId);
 
     String getUserName(int userId);
+
+    User findById(int userId);
 }

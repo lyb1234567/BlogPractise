@@ -107,4 +107,13 @@ public class ArticleController {
         return Result.success(articleVo);
     }
 
+    @GetMapping("/getArticle")
+    public Result<ArticleVo> getArticle(@RequestParam("articleId") int articleId)
+    {
+        log.info("获取文章: articleId={}", articleId);
+        Article article = articleService.getById(articleId);
+        ArticleVo articleVo = ArticleVo.builder().id(article.getId()).title(article.getTitle()).summary(article.getSummary()).likes(article.getLikes()).creationDate(article.getCreationDate()).userId(article.getUserId()).content(article.getContent()).build();
+        return Result.success(articleVo);
+    }
+
 }

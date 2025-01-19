@@ -88,4 +88,13 @@ public class UserServiceImpl implements UserService {
         }
         return user.getUserName();
     }
+
+    @Override
+    public User findById(int userId) {
+        User user = userMapper.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User Not Found with id: " + userId);
+        }
+        return user;
+    }
 }

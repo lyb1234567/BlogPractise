@@ -579,12 +579,21 @@ async function likeArticle(articleId, likeIcon) {
 function setupLogout() {
     const logoutBtn = document.getElementById('logoutBtn');
     logoutBtn.addEventListener('click', () => {
+        // 清除本地存储中的 token 和用户信息
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+
+        // 更新页面头部和显示成功消息
         updateHeader();
         showMessage('success', '已登出', '您已成功登出。');
+
+        // 延迟 1 秒后跳转到登录页面
+        setTimeout(() => {
+            window.location.href = '/login.html';
+        }, 1000); // 1000 毫秒 = 1 秒
     });
 }
+
 
 // 防止XSS攻击，转义HTML
 function escapeHTML(str) {

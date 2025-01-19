@@ -8,6 +8,7 @@ import com.example.blog.entity.User;
 import com.example.blog.service.UserService;
 import com.example.blog.vo.UserLoginVo;
 import com.example.blog.vo.UserRegisterVo;
+import com.example.blog.vo.UserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,5 +45,15 @@ public class UserController {
         User user = userService.register(userRegisterDTO);
         UserRegisterVo userRegisterVoResult = UserRegisterVo.builder().userName(user.getUserName()).emailAddress(user.getEmailAddress()).name(user.getName()).build();
         return Result.success(userRegisterVoResult);
+    }
+
+    @GetMapping("/getUser")
+    public Result<UserVo> getUser(@RequestParam("userId") int userId)
+    {
+        log.info("获取用户: userId={}", userId);
+        System.out.println("sdbabsd");
+        User user = userService.findById(userId);
+        UserVo userVo = UserVo.builder().userName(user.getUserName()).name(user.getName()).emailAddress(user.getEmailAddress()).build();
+        return Result.success(userVo);
     }
 }

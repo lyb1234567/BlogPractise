@@ -1,382 +1,333 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>评论层级渲染示例</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>我的博客示例 - 美化版</title>
+  <!-- 在此处直接写入 CSS 样式 -->
   <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            padding: 20px;
-        }
-        .comment-item {
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #fff;
-            border-radius: 5px;
-        }
-        .comment-item .comment-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .comment-item .userName {
-            font-weight: bold;
-            color: #333;
-        }
-        .comment-item .comment-content {
-            margin: 5px 0;
-            color: #555;
-        }
-        .comment-item .comment-date {
-            font-size: 12px;
-            color: #999;
-            display: inline-block; /* 使创建时间和回复按钮在同一行 */
-        }
-        .comment-item .reply-button {
-            font-size: 12px;
-            color: #666;
-            cursor: pointer;
-            margin-left: 10px; /* 与创建时间的间距 */
-            display: inline-block; /* 使回复按钮与创建时间在同一行 */
-        }
-        .comment-item .reply-button:hover {
-            color: #333; /* 鼠标悬停时变色 */
-        }
-        .comment-item .comment-children {
-            margin-left: 20px; /* 直接子评论缩进 */
-        }
-        .comment-item .comment-children-nested {
-            margin-left: 0; /* 嵌套子评论不缩进 */
-            padding-left: 0; /* 确保嵌套子评论没有额外缩进 */
-        }
-        .comment-item .arrow {
-            margin: 0 5px;
-            color: #666;
-        }
-        .comment-item .userName + .arrow + .parentUserName {
-            display: inline; /* 确保父评论用户名与箭头在同一行 */
-        }
-        /* 为嵌套评论项添加实线边框 */
-        .comment-children .comment-item,
-        .comment-children-nested .comment-item {
-            padding-left: 0; /* 移除内边距 */
-            margin-left: 0; /* 移除外边距 */
-        }
-        .reply-dialog {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            width: 300px; /* 固定对话框宽度 */
-            box-sizing: border-box; /* 确保 padding 不会增加宽度 */
-        }
+    /* ============ 全局与重置 ============ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      background-color: #f6f6f8; /* 较柔和的灰白色 */
+      color: #333;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
 
-        .reply-dialog h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 18px;
-            color: #333;
-        }
+    /* ============ 导航栏 ============ */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: linear-gradient(45deg, #6c5ce7, #a29bfe); /* 漂亮的渐变 */
+      color: #fff;
+    }
+    .nav-left .logo {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+    .nav-right a,
+    .nav-right button {
+      margin-left: 1.2rem;
+      color: #fff;
+      text-decoration: none;
+      background: none;
+      border: none;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+    .nav-right a:hover,
+    .nav-right button:hover {
+      opacity: 0.8;
+    }
 
-        .reply-dialog input,
-        .reply-dialog textarea {
-            width: 100%; /* 宽度占满父容器 */
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box; /* 确保 padding 不会增加宽度 */
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-        }
+    /* ============ 容器布局 ============ */
+    .container {
+      max-width: 1200px; /* 中心内容区的最大宽度 */
+      margin: 1.5rem auto;
+      display: flex;
+      gap: 1.5rem; /* 栏目之间的间距 */
+      padding: 0 1rem;
+    }
 
-        .reply-dialog textarea {
-            height: 100px; /* 设置文本区域的高度 */
-            resize: vertical; /* 允许用户垂直调整高度 */
-        }
+    /* ============ 文章列表（左侧栏） ============ */
+    .sidebar {
+      flex: 0 0 20%;
+      background-color: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      padding: 1rem;
+      height: fit-content; /* 使其高度自适应内容 */
+    }
+    .sidebar h2 {
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      border-bottom: 2px solid #6c5ce7;
+      display: inline-block;
+      padding-bottom: 0.2rem;
+    }
+    .sidebar ul {
+      list-style: none;
+      margin-top: 1rem;
+    }
+    .sidebar li {
+      margin-bottom: 0.8rem;
+    }
+    .sidebar a {
+      text-decoration: none;
+      color: #333;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    .sidebar a:hover {
+      color: #6c5ce7;
+    }
 
-        .reply-dialog .dialog-buttons {
-            display: flex;
-            justify-content: flex-end; /* 按钮右对齐 */
-            gap: 10px; /* 按钮之间的间距 */
-        }
+    /* ============ 文章内容区（中间主体） ============ */
+    .main-content {
+      flex: 1;
+      background-color: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      padding: 1.5rem;
+      min-height: 400px;
+    }
+    .main-content article h1 {
+      margin-bottom: 1rem;
+      font-size: 1.6rem;
+      color: #4c4cff;
+    }
+    .main-content article p {
+      margin-bottom: 1rem;
+      line-height: 1.6;
+      font-size: 1rem;
+      color: #555;
+    }
 
-        .reply-dialog button {
-            padding: 8px 16px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
+    /* ============ 右侧边栏 ============ */
+    .sidebar-right {
+      flex: 0 0 25%;
+      background-color: #fff;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      padding: 1rem;
+      height: fit-content;
+    }
+    .sidebar-right > div {
+      margin-bottom: 1.5rem;
+    }
+    .sidebar-right h2 {
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      border-bottom: 2px solid #6c5ce7;
+      display: inline-block;
+      padding-bottom: 0.2rem;
+    }
+    .sidebar-right p {
+      line-height: 1.6;
+      font-size: 0.95rem;
+      color: #555;
+    }
+    .sidebar-right ul {
+      list-style: none;
+      margin-top: 0.8rem;
+    }
+    .sidebar-right li {
+      margin-bottom: 0.8rem;
+    }
+    .sidebar-right a {
+      text-decoration: none;
+      color: #333;
+      transition: color 0.2s;
+      font-size: 0.95rem;
+    }
+    .sidebar-right a:hover {
+      color: #6c5ce7;
+    }
 
-        .reply-dialog button:hover {
-            background-color: #0056b3;
-        }
+    /* ============ 页脚 ============ */
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      padding: 1.5rem 0;
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .footer span {
+      color: #6c5ce7;
+      font-weight: bold;
+    }
 
-        .reply-dialog button#cancel-reply {
-            background-color: #6c757d;
-        }
-
-        .reply-dialog button#cancel-reply:hover {
-            background-color: #5a6268;
-        }
-
-    </style>
+    /* ============ 暗色主题 ============ */
+    body.dark-theme {
+      background-color: #222;
+      color: #ddd;
+    }
+    body.dark-theme .navbar {
+      background: linear-gradient(45deg, #1e1e1e, #2f2f2f);
+    }
+    body.dark-theme .logo {
+      color: #ddd !important;
+    }
+    body.dark-theme .nav-right a,
+    body.dark-theme .nav-right button {
+      color: #ddd;
+    }
+    body.dark-theme .sidebar,
+    body.dark-theme .main-content,
+    body.dark-theme .sidebar-right {
+      background-color: #2f2f2f;
+      box-shadow: none; /* 暗色主题下可取消阴影 */
+    }
+    body.dark-theme .sidebar a,
+    body.dark-theme .sidebar-right a {
+      color: #ddd;
+    }
+    body.dark-theme .sidebar a:hover,
+    body.dark-theme .sidebar-right a:hover {
+      color: #6c5ce7;
+    }
+    body.dark-theme .main-content article h1 {
+      color: #6c5ce7;
+    }
+    body.dark-theme .footer {
+      color: #888;
+    }
+  </style>
 </head>
 <body>
-<h1>评论层级渲染示例</h1>
-<div id="comments-container"></div>
-
-<!-- 回复对话框 -->
-<div class="overlay" id="overlay"></div>
-<div class="reply-dialog" id="reply-dialog">
-  <h3>回复评论</h3>
-  <input type="text" id="reply-username" placeholder="请输入用户名">
-  <textarea id="reply-content" placeholder="请输入回复内容"></textarea>
-  <div class="dialog-buttons">
-    <button id="submit-reply">提交</button>
-    <button id="cancel-reply">取消</button>
+<!-- ========= 导航栏 ========= -->
+<header class="navbar">
+  <div class="nav-left">
+    <a href="#" class="logo">My Blog</a>
   </div>
+  <div class="nav-right">
+    <a href="#home">首页</a>
+    <a href="#articles">文章</a>
+    <a href="#about">关于</a>
+    <a href="#contact">联系</a>
+    <button id="toggleThemeBtn">切换主题</button>
+  </div>
+</header>
+
+<!-- ========= 主体内容区域 ========= -->
+<div class="container">
+  <!-- 左侧文章列表 -->
+  <aside class="sidebar">
+    <h2>文章列表</h2>
+    <ul>
+      <li><a href="#" onclick="loadArticle('article1')">文章一</a></li>
+      <li><a href="#" onclick="loadArticle('article2')">文章二</a></li>
+      <li><a href="#" onclick="loadArticle('article3')">文章三</a></li>
+      <li><a href="#" onclick="loadArticle('article4')">文章四</a></li>
+    </ul>
+  </aside>
+
+  <!-- 中间文章内容区 -->
+  <main class="main-content">
+    <article id="articleContent">
+      <h1>欢迎来到我的博客！</h1>
+      <p>
+        在这里你可以找到各种精彩的文章。
+        左侧可以选择不同文章进行阅读，右侧展示作者信息或热门内容。
+      </p>
+      <p>
+        这是一个简单的博客页面示例，但样式做了略微的美化。
+        你可以基于此进一步定制或扩展更多功能。
+      </p>
+    </article>
+  </main>
+
+  <!-- 右侧边栏（作者简介、热门文章等） -->
+  <aside class="sidebar-right">
+    <div class="author-profile">
+      <h2>作者简介</h2>
+      <p>
+        你好，我是作者 A。热爱编程与写作，
+        喜欢分享各类技术文章和学习心得。
+      </p>
+    </div>
+    <div class="popular-posts">
+      <h2>热门文章</h2>
+      <ul>
+        <li><a href="#">如何快速搭建个人博客</a></li>
+        <li><a href="#">前端常见问题总结</a></li>
+        <li><a href="#">后端框架优缺点对比</a></li>
+      </ul>
+    </div>
+  </aside>
 </div>
 
+<!-- ========= 页脚 ========= -->
+<footer class="footer">
+  <p>&copy; <span>2025</span> MyBlog. All rights reserved.</p>
+</footer>
+
+<!-- ========= JavaScript ========= -->
 <script>
-        // 模拟评论数据
-        let comments = [
-            { id: 1, parentId: 0, userName: "用户A", content: "这是根评论1", creationDate: "2023-10-01" },
-            { id: 2, parentId: 1, userName: "用户B", content: "这是对评论1的回复", creationDate: "2023-10-02" },
-            { id: 3, parentId: 2, userName: "用户C", content: "这是对回复的回复", creationDate: "2023-10-03" },
-            { id: 4, parentId: 0, userName: "用户D", content: "这是根评论2", creationDate: "2023-10-04" },
-            { id: 5, parentId: 4, userName: "用户E", content: "这是对评论2的回复", creationDate: "2023-10-05" },
-            { id: 6, parentId: 3, userName: "用户F", content: "这是对评论2的直接子评论的回复", creationDate: "2023-10-05" },
-            { id: 7, parentId: 6, userName: "用户G", content: "这是对用户F的回复", creationDate: "2023-10-06" },
-            { id: 8, parentId: 1, userName: "用户H", content: "这是对评论1的另一个回复", creationDate: "2023-10-07" },
-            { id: 9, parentId: 8, userName: "用户I", content: "这是对用户H的回复", creationDate: "2023-10-08" },
-        ];
+    // 切换主题
+    const toggleThemeBtn = document.getElementById("toggleThemeBtn");
+    toggleThemeBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-theme");
+    });
 
-        // 当前选中的评论 ID
-        let currentCommentId = null;
+    // 模拟文章内容
+    const articles = {
+      article1: {
+        title: "文章一：前端开发入门",
+        content: `
+          前端开发通常是指 Web 页面或应用的可视化部分的开发，包括 HTML、CSS、JavaScript 等。<br/>
+          作为初学者，可以先掌握基本的标签和样式，然后再逐步学习交互和框架。
+        `
+      },
+      article2: {
+        title: "文章二：JavaScript 基础",
+        content: `
+          JavaScript 是 Web 前端开发的核心语言，用于实现各种交互和功能。<br/>
+          建议从变量、数据类型、函数、作用域、事件处理等基础概念入手学习。
+        `
+      },
+      article3: {
+        title: "文章三：CSS 布局技巧",
+        content: `
+          CSS 布局是前端开发中重要的部分，包括盒模型、浮动、Flexbox、Grid 等。<br/>
+          利用这些技术可以更好地实现响应式设计和精美的页面布局。
+        `
+      },
+      article4: {
+        title: "文章四：前后端分离与接口",
+        content: `
+          前后端分离是现代 Web 开发的趋势，前端与后端通过 API 进行数据交互。<br/>
+          这样可以提高开发效率，使项目结构更加清晰，也更方便多人协作。
+        `
+      }
+    };
 
-        /**
-         * 将扁平的评论数据构建成树状结构
-         * @param {Array} comments - 评论数组
-         * @returns {Array} 根评论数组
-         */
-        function buildCommentTree(comments) {
-            const map = {};
-            const roots = [];
-
-            // 创建评论对象映射
-            comments.forEach(comment => {
-                map[comment.id] = { ...comment, children: [] };
-            });
-
-            // 构建树结构
-            comments.forEach(comment => {
-                if (comment.parentId === 0) {
-                    roots.push(map[comment.id]); // 根评论
-                } else {
-                    if (map[comment.parentId]) {
-                        map[comment.parentId].children.push(map[comment.id]); // 子评论
-                        map[comment.id].parentUserName = map[comment.parentId].userName; // 设置父评论用户名
-                    }
-                }
-            });
-
-            return roots;
-        }
-
-        /**
-         * 递归渲染一条评论及其子评论
-         * @param {Object} commentNode - 评论节点
-         * @param {number} depth - 当前深度
-         * @returns {HTMLElement} 评论的 DOM 元素
-         */
-        function renderCommentNode(commentNode, depth = 0) {
-            const commentItem = document.createElement("div");
-            commentItem.className = "comment-item";
-
-            // 渲染评论内容
-            if (depth === 0) {
-                // 根评论
-                commentItem.innerHTML = `
-                    <p>
-                        <img src="https://via.placeholder.com/30" alt="${commentNode.userName}的头像" class="comment-avatar">
-                        <strong class="userName">${commentNode.userName}</strong>
-                    </p>
-                    <p class="comment-content">${commentNode.content}</p>
-                    <p>
-                        <span class="comment-date">${commentNode.creationDate}</span>
-                        <span class="reply-button" data-comment-id="${commentNode.id}" title="回复">💬 回复</span>
-                    </p>
-                `;
-            } else if (depth === 1) {
-                // 直接子评论
-                commentItem.innerHTML = `
-                    <p>
-                        <img src="https://via.placeholder.com/30" alt="${commentNode.userName}的头像" class="comment-avatar">
-                        <strong class="userName">${commentNode.userName}</strong>
-                    </p>
-                    <p class="comment-content">${commentNode.content}</p>
-                    <p>
-                        <span class="comment-date">${commentNode.creationDate}</span>
-                        <span class="reply-button" data-comment-id="${commentNode.id}" title="回复">💬 回复</span>
-                    </p>
-                `;
-            } else if (depth > 1) {
-                // 嵌套子评论
-                commentItem.innerHTML = `
-                    <p>
-                        <img src="https://via.placeholder.com/30" alt="${commentNode.userName}的头像" class="comment-avatar">
-                        <strong class="userName">${commentNode.userName}</strong>
-                        <span class="arrow">➤</span>
-                        <strong class="parentUserName">${commentNode.parentUserName}</strong>
-                    </p>
-                    <p class="comment-content">${commentNode.content}</p>
-                    <p>
-                        <span class="comment-date">${commentNode.creationDate}</span>
-                        <span class="reply-button" data-comment-id="${commentNode.id}" title="回复">💬 回复</span>
-                    </p>
-                `;
-            }
-
-            // 渲染子评论
-            if (commentNode.children && commentNode.children.length > 0) {
-                const childrenContainer = document.createElement("div");
-                if (depth === 0) {
-                    childrenContainer.className = "comment-children"; // 直接子评论缩进
-                } else if (depth >= 1) {
-                    childrenContainer.className = "comment-children-nested"; // 嵌套子评论不缩进
-                }
-
-                commentNode.children.forEach(child => {
-                    const childEl = renderCommentNode(child, depth + 1);
-                    childrenContainer.appendChild(childEl);
-                });
-
-                commentItem.appendChild(childrenContainer);
-            }
-
-            return commentItem;
-        }
-
-        /**
-         * 渲染评论层级结构
-         * @param {Array} comments - 评论数组
-         * @param {HTMLElement} container - 评论容器
-         */
-        function renderCommentsHierarchy(comments, container) {
-            container.innerHTML = ""; // 清空容器
-
-            if (!comments || comments.length === 0) {
-                container.innerHTML = "<p>暂无评论</p>";
-                return;
-            }
-
-            // 构建评论树并渲染
-            const roots = buildCommentTree(comments);
-            roots.forEach(root => {
-                const rootEl = renderCommentNode(root);
-                container.appendChild(rootEl);
-            });
-
-            // 绑定回复按钮点击事件
-            const replyButtons = document.querySelectorAll(".reply-button");
-            replyButtons.forEach(button => {
-                button.addEventListener("click", () => {
-                    currentCommentId = button.getAttribute("data-comment-id");
-                    showReplyDialog();
-                });
-            });
-        }
-
-        /**
-         * 显示回复对话框
-         */
-        function showReplyDialog() {
-            const dialog = document.getElementById("reply-dialog");
-            const overlay = document.getElementById("overlay");
-            dialog.style.display = "block";
-            overlay.style.display = "block";
-        }
-
-        /**
-         * 隐藏回复对话框
-         */
-        function hideReplyDialog() {
-            const dialog = document.getElementById("reply-dialog");
-            const overlay = document.getElementById("overlay");
-            dialog.style.display = "none";
-            overlay.style.display = "none";
-        }
-
-        /**
-         * 提交回复
-         */
-        function submitReply() {
-            const username = document.getElementById("reply-username").value.trim();
-            const content = document.getElementById("reply-content").value.trim();
-
-            if (!username || !content) {
-                alert("用户名和回复内容不能为空！");
-                return;
-            }
-
-            // 生成新的评论
-            const newComment = {
-                id: comments.length + 1,
-                parentId: parseInt(currentCommentId),
-                userName: username,
-                content: content,
-                creationDate: new Date().toLocaleDateString(),
-            };
-
-            // 插入到comments数组的相应位置
-            if (newComment.parentId === 0) {
-                // 新的根评论，插入到最前面
-                comments.unshift(newComment);
-            } else {
-                // 找到父评论，并将其插入到父评论的子评论列表的最前面
-                const parentComment = comments.find(c => c.id === newComment.parentId);
-                if (parentComment) {
-                    // 重新排列父评论的子评论，将新评论放在最前面
-                    comments = comments.filter(c => c.id !== newComment.id);
-                    comments.splice(comments.indexOf(parentComment) + 1, 0, newComment);
-                } else {
-                    // 如果父评论不存在，将其作为根评论插入
-                    comments.unshift(newComment);
-                }
-            }
-
-            // 重新渲染评论
-            const commentsContainer = document.getElementById("comments-container");
-            renderCommentsHierarchy(comments, commentsContainer);
-
-            // 隐藏对话框
-            hideReplyDialog();
-
-            // 清空输入框
-            document.getElementById("reply-username").value = "";
-            document.getElementById("reply-content").value = "";
-        }
-
-        // 初始化渲染
-        const commentsContainer = document.getElementById("comments-container");
-        renderCommentsHierarchy(comments, commentsContainer);
-
-        // 绑定提交和取消按钮事件
-        document.getElementById("submit-reply").addEventListener("click", submitReply);
-        document.getElementById("cancel-reply").addEventListener("click", hideReplyDialog);
-    </script>
+    // 加载文章
+    function loadArticle(articleKey) {
+      const articleData = articles[articleKey];
+      const articleContent = document.getElementById("articleContent");
+      if (articleData) {
+        articleContent.innerHTML = `
+          <h1>${articleData.title}</h1>
+          <p>${articleData.content}</p>
+        `;
+      } else {
+        articleContent.innerHTML = `
+          <h1>文章未找到</h1>
+          <p>抱歉，没有对应的文章内容。</p>
+        `;
+      }
+    }
+  </script>
 </body>
 </html>
