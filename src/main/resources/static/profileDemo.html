@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>个人中心示例布局</title>
+  <style>
+    /* 全局基础样式重置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    a {
+      color: #3498db;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* 页面容器：控制整体宽度居中 */
+    .container {
+      width: 1200px;
+      max-width: 90%;
+      margin: 0 auto;
+    }
+
+    /* 个人信息区域：位于页面左上 */
+    .profile-info-section {
+      background-color: #fff;
+      border-radius: 4px;
+      padding: 20px;
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .profile-avatar img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .profile-details .profile-name {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+    .profile-details .profile-desc {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    .edit-profile-btn {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      background-color: #3498db;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+    }
+    .edit-profile-btn:hover {
+      background-color: #2980b9;
+    }
+
+    /* 导航栏：紧接个人信息区域下方，横向排列 */
+    .profile-nav {
+      background-color: #fff;
+      border-radius: 4px;
+      margin-top: 10px;
+      padding: 10px 20px;
+    }
+    .profile-nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1rem;
+    }
+    .profile-nav li {
+      padding: 6px 8px;
+      cursor: pointer;
+    }
+    .profile-nav li.active {
+      border-bottom: 2px solid #3498db;
+      color: #3498db;
+    }
+
+    /* 主体布局：左侧文章/回答列表，右侧创作中心+个人成就 */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    /* 主要内容：文章或回答列表 */
+    .profile-main {
+      background-color: #fff;
+      border-radius: 4px;
+      padding: 20px;
+    }
+    .profile-main h3 {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    .activity-item {
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+    .activity-item header h4 {
+      font-size: 1rem;
+    }
+    .activity-item header time {
+      margin-left: 10px;
+      font-size: 0.85rem;
+      color: #999;
+    }
+    .activity-item p {
+      margin: 8px 0;
+      font-size: 0.9rem;
+    }
+    .activity-item footer {
+      font-size: 0.85rem;
+    }
+
+    /* 右侧：创作中心 + 个人成就 */
+    .profile-right-pane {
+      display: flex;
+      flex-direction: column;
+      gap: 20px; /* 创作中心和个人成就之间的间距 */
+    }
+
+    /* 创作中心 */
+    .creation-center {
+      background-color: #fff;
+      border-radius: 4px;
+      padding: 20px;
+    }
+    .creation-center h3 {
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+    .creation-center p {
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      color: #666;
+    }
+    .create-button {
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      background-color: #2ecc71;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+    }
+    .create-button:hover {
+      background-color: #27ae60;
+    }
+
+    /* 个人成就 */
+    .profile-stats {
+      background-color: #fff;
+      border-radius: 4px;
+      padding: 20px;
+      /* 如需始终固定，可使用 position: sticky; bottom: 0; */
+    }
+    .profile-stats h3 {
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+    .profile-stats ul {
+      list-style: none;
+    }
+    .profile-stats li {
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+
+    /* 底部区域（可酌情保留或删除） */
+    .global-footer {
+      background-color: #fff;
+      margin-top: 20px;
+      border-top: 1px solid #ddd;
+      padding: 20px;
+    }
+    .footer-info {
+      text-align: center;
+    }
+    .footer-links a {
+      color: #3498db;
+      margin: 0 6px;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- 个人信息（左上方） -->
+  <section class="profile-info-section">
+    <div class="profile-avatar">
+      <img src="https://via.placeholder.com/80" alt="用户头像" />
+    </div>
+    <div class="profile-details">
+      <h2 class="profile-name"></h2>
+      <p class="profile-desc"></p>
+      <button class="edit-profile-btn">编辑个人资料</button>
+    </div>
+  </section>
+
+  <!-- 导航栏（紧贴个人信息下方） -->
+  <nav class="profile-nav">
+    <ul>
+      <li class="active" data-tab="dynamic">动态</li>
+      <li data-tab="answers">回答</li>
+      <li data-tab="questions">提问</li>
+      <li data-tab="articles">文章</li>
+      <li data-tab="thoughts">想法</li>
+      <li data-tab="favorites">收藏</li>
+      <li data-tab="follows">关注</li>
+    </ul>
+  </nav>
+
+  <!-- 主体布局：左列文章/回答列表，右列创作中心 + 个人成就 -->
+  <div class="main-layout">
+    <!-- 主要内容：文章/回答列表等 -->
+    <section class="profile-main">
+      <h3 id="tab-title">我的动态</h3>
+      <div id="tab-content"></div>
+    </section>
+
+    <!-- 右侧区域 -->
+    <aside class="profile-right-pane">
+      <!-- 创作中心：在个人成就上方 -->
+      <section class="creation-center">
+        <h3>创作中心</h3>
+        <p>在这里撰写、发布属于你的文章、回答或想法，与他人分享。</p>
+        <button class="create-button" id="btnCreate">去创作</button>
+      </section>
+
+      <!-- 个人成就模块 -->
+      <section class="profile-stats">
+        <h3>个人成就</h3>
+        <ul>
+          <!-- 动态填充 -->
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <!-- 底部区域 -->
+  <footer class="global-footer">
+    <section class="footer-info">
+      <p>&copy; 2025 示例网站. All rights reserved.</p>
+      <nav class="footer-links">
+        <a href="#">关于我们</a> |
+        <a href="#">帮助中心</a> |
+        <a href="#">隐私政策</a>
+      </nav>
+    </section>
+  </footer>
+</div>
+
+<script>
+    // ======= 模拟数据 =======
+    const mockData = {
+      profile: {
+        name: "迷途的管家\\",
+        desc: "爱丁堡大学 (University of Edinburgh) | 计算机科学",
+        avatar: "https://via.placeholder.com/80" // 替换为真实头像地址
+      },
+      stats: [
+        { text: "获得 8 次赞同" },
+        { text: "获得 14 次收藏" },
+        { text: "10 次喜欢" },
+        { text: "参与 52 次公共编辑" },
+      ],
+      tabs: {
+        dynamic: [
+          {
+            title: "赞同了回答",
+            time: "2025-01-18 18:20",
+            content: "在中国会熟练使用ChatGPT，那么已经领先了多少人？"
+          },
+          {
+            title: "赞同了文章",
+            time: "2025-01-18 11:04",
+            content: "用Rust埋头科研的两年"
+          }
+        ],
+        answers: [
+          {
+            title: "回答：前端性能优化有哪些经验？",
+            time: "2025-01-05 12:30",
+            content: "我在项目中常用的手段包括..."
+          },
+          {
+            title: "回答：React Hooks 有哪些最佳实践？",
+            time: "2025-01-06 09:40",
+            content: "关于 useEffect、useMemo 等常见用法..."
+          }
+        ],
+        questions: [
+          {
+            title: "提问：如何提升网页的可访问性（a11y）？",
+            time: "2025-01-07 09:10",
+            content: "项目中需要兼顾盲人读屏、键盘导航..."
+          }
+        ],
+        articles: [
+          {
+            title: "文章：前端工程化的一些思考",
+            time: "2025-01-10 10:20",
+            content: "随着项目规模增加，我们需要..."
+          }
+        ],
+        thoughts: [
+          {
+            title: "想法：Vite 2.0 试用感受",
+            time: "2025-01-12 19:00",
+            content: "启动速度非常快，对比 Webpack..."
+          }
+        ],
+        favorites: [
+          {
+            title: "收藏：一篇深度解析 TypeScript 高级类型的文章",
+            time: "2024-12-30 15:30",
+            content: "帮助理解 TS 泛型、条件类型..."
+          }
+        ],
+        follows: [
+          {
+            title: "关注：某技术博主",
+            time: "2024-12-18 08:00",
+            content: "专业分享 React、Vue 源码解析"
+          }
+        ]
+      }
+    };
+
+    // ======= DOM 操作与逻辑 =======
+    document.addEventListener("DOMContentLoaded", () => {
+      const { profile, stats, tabs } = mockData;
+
+      // 1. 用户信息
+      document.querySelector(".profile-name").textContent = profile.name;
+      document.querySelector(".profile-desc").textContent = profile.desc;
+      document.querySelector(".profile-avatar img").src = profile.avatar;
+
+      // 2. 个人成就
+      const statsUl = document.querySelector(".profile-stats ul");
+      stats.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item.text;
+        statsUl.appendChild(li);
+      });
+
+      // 3. 选项卡切换
+      const tabLinks = document.querySelectorAll(".profile-nav li");
+      const tabTitle = document.getElementById("tab-title");
+      const tabContent = document.getElementById("tab-content");
+
+      function renderTabContent(tabKey) {
+        tabContent.innerHTML = ""; // 清空内容
+
+        const titleMap = {
+          dynamic: "我的动态",
+          answers: "我的回答",
+          questions: "我的提问",
+          articles: "我的文章",
+          thoughts: "我的想法",
+          favorites: "我的收藏",
+          follows: "我的关注",
+        };
+        tabTitle.textContent = titleMap[tabKey] || "我的动态";
+
+        if (tabs[tabKey] && Array.isArray(tabs[tabKey])) {
+          tabs[tabKey].forEach((item) => {
+            const article = document.createElement("article");
+            article.className = "activity-item";
+            article.innerHTML = `
+              <header>
+                <h4>${item.title}</h4>
+                <time>${item.time}</time>
+              </header>
+              <p>${item.content}</p>
+              <footer>
+                <a href="#">查看详情</a>
+              </footer>
+            `;
+            tabContent.appendChild(article);
+          });
+        }
+      }
+
+      // 默认渲染“动态”
+      renderTabContent("dynamic");
+
+      // 点击事件
+      tabLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          // 切换 active
+          tabLinks.forEach((l) => l.classList.remove("active"));
+          link.classList.add("active");
+
+          const tabKey = link.dataset.tab;
+          renderTabContent(tabKey);
+        });
+      });
+
+      // 4. 创作中心按钮点击事件（可根据需求编写跳转或弹窗逻辑）
+      const btnCreate = document.getElementById("btnCreate");
+      btnCreate.addEventListener("click", () => {
+        alert("前往创作页面（请在此处替换为实际的跳转或弹窗逻辑）");
+        // window.location.href = '/your-creation-page'; // 示例：跳转到创作页面
+      });
+    });
+  </script>
+</body>
+</html>
