@@ -1,6 +1,7 @@
 package com.example.blog.service.serviceImpl;
 
 import blog_common.exception.ArticleNotFoundException;
+import blog_common.exception.UserNotFoundException;
 import com.example.blog.dto.ArticleCreateDTO;
 import com.example.blog.entity.Article;
 import com.example.blog.entity.User;
@@ -64,5 +65,17 @@ public class ArticleServiceImpl implements ArticleService {
         }
 
         return article;
+    }
+
+    @Override
+    public List<Article> getByUserId(int userId) {
+        System.out.println("Get articles by userId: " + userId);
+        User user = userMapper.findById(userId);
+        if (user == null)
+        {
+            throw new UserNotFoundException("User not found");
+        }
+        List<Article> articles = articleMapper.findByUserId(userId);
+        return articles;
     }
 }

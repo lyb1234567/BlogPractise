@@ -11,4 +11,6 @@ public interface ArticleService {
     List<Article> getTop5ArticlesByLikes();
 
     Article getById(int articleId);
+
+    List<Article> getByUserId(int userId);
 }

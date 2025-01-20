@@ -1,10 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <title>个人中心示例布局</title>
+    <link rel="stylesheet" href="css/profile.css">
 </head>
 <body>
+<div class="container">
+    <!-- 个人信息（左上方） -->
+    <section class="profile-info-section">
+        <div class="profile-avatar">
+            <img src="https://via.placeholder.com/80" alt="用户头像" />
+        </div>
+        <div class="profile-details">
+            <h2 class="profile-name"></h2>
+            <p class="profile-desc"></p>
+            <button class="edit-profile-btn">编辑个人资料</button>
+        </div>
+    </section>
 
+    <!-- 导航栏（紧贴个人信息下方） -->
+    <nav class="profile-nav">
+        <ul>
+            <li class="active" data-tab="dynamic">动态</li>
+            <li data-tab="answers">回答</li>
+            <li data-tab="questions">提问</li>
+            <li data-tab="articles">文章</li>
+            <li data-tab="thoughts">想法</li>
+            <li data-tab="favorites">收藏</li>
+            <li data-tab="follows">关注</li>
+        </ul>
+    </nav>
+
+    <!-- 主体布局：左列文章/回答列表，右列创作中心 + 个人成就 -->
+    <div class="main-layout">
+        <!-- 主要内容：文章/回答列表等 -->
+        <section class="profile-main">
+            <h3 id="tab-title">我的动态</h3>
+            <div id="tab-content"></div>
+        </section>
+
+        <!-- 右侧区域 -->
+        <aside class="profile-right-pane">
+            <!-- 创作中心：在个人成就上方 -->
+            <section class="creation-center">
+                <h3>创作中心</h3>
+                <p>在这里撰写、发布属于你的文章、回答或想法，与他人分享。</p>
+                <button class="create-button" id="btnCreate">去创作</button>
+            </section>
+
+            <!-- 个人成就模块 -->
+            <section class="profile-stats">
+                <h3>个人成就</h3>
+                <ul>
+                    <!-- 动态填充 -->
+                </ul>
+            </section>
+        </aside>
+    </div>
+
+    <!-- 底部区域 -->
+    <footer class="global-footer">
+        <section class="footer-info">
+            <p>&copy; 2025 示例网站. All rights reserved.</p>
+            <nav class="footer-links">
+                <a href="#">关于我们</a> |
+                <a href="#">帮助中心</a> |
+                <a href="#">隐私政策</a>
+            </nav>
+        </section>
+    </footer>
+</div>
+
+<script src="js/profile.js"></script>
 </body>
 </html>

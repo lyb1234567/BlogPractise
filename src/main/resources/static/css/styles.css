@@ -66,6 +66,22 @@ header {
 .login-container button:hover, #userInfo button:hover {
     background-color: #e6e6e6;
 }
+.avatar-button-style {
+    cursor: pointer; /* 鼠标悬停时显示手型指针 */
+    display: inline-block;
+    padding: 5px; /* 可根据需求调整间距 */
+    border: none; /* 移除默认边框 */
+    background: none; /* 移除默认背景 */
+    outline: none; /* 移除默认聚焦样式 */
+    transition: transform 0.2s ease; /* 添加平滑缩放动画 */
+}
+
+/* 鼠标悬停时的效果 */
+.avatar-button-style:hover {
+    transform: scale(1.1); /* 鼠标悬停时放大 */
+}
+
+
 
 #userInfo {
     display: none;

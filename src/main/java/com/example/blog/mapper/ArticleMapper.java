@@ -29,4 +29,12 @@ public interface ArticleMapper {
             // 添加其他需要映射的字段
     })
     Article getById(int articleId);
+
+    @Select("SELECT * FROM article WHERE user_id = #{userId}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "userId", column = "user_id"),
+            // 添加其他需要映射的字段
+    })
+    List<Article> findByUserId(int userId);
 }

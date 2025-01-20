@@ -25,5 +25,7 @@ public class UserLoginVo implements Serializable {
 
     private String avatar;
 
+    private String description;
+
 
 }

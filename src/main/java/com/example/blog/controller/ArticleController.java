@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/article")
@@ -114,6 +115,25 @@ public class ArticleController {
         Article article = articleService.getById(articleId);
         ArticleVo articleVo = ArticleVo.builder().id(article.getId()).title(article.getTitle()).summary(article.getSummary()).likes(article.getLikes()).creationDate(article.getCreationDate()).userId(article.getUserId()).content(article.getContent()).build();
         return Result.success(articleVo);
+    }
+
+    @GetMapping("/getArticlesByUserId")
+    public Result<List<ArticleVo>> getArticlesByUserId(@RequestParam("userId") int userId)
+    {
+        log.info("根据用户ID获取文章: userId={}", userId);
+        List<Article> articles = articleService.getByUserId(userId);
+        List<ArticleVo> articleVos = articles.stream()
+                .map(article -> ArticleVo.builder()
+                        .id(article.getId())
+                        .title(article.getTitle())
+                        .summary(article.getSummary())
+                        .likes(article.getLikes())
+                        .creationDate(article.getCreationDate())
+                        .userId(article.getUserId())
+                        .content(article.getContent())
+                        .build())
+                .collect(Collectors.toList());
+        return Result.success(articleVos);
     }
 
 }
