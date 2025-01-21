@@ -37,6 +37,45 @@ function loadUserBasicInfo()
      document.querySelector(".profile-avatar img").src = user.avatar;
 }
 
+function getArticlesLikedByUserId(userId)
+{
+  return new Promise((resolve, reject) => {
+          // 检查 userId 是否有效
+          if (!userId || isNaN(userId)) {
+              return reject("无效的用户ID");
+          }
+
+          // 构造请求URL
+          const url = `/article/getArticlesLikedByUserId?userId=${userId}`;
+
+          // 使用 Fetch API 调用后端接口
+          fetch(url, {
+              method: "GET",
+              headers: {
+                  "Content-Type": "application/json"
+              }
+          })
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error(`请求失败，状态码: ${response.status}`);
+              }
+              return response.json(); // 解析 JSON 数据
+          })
+          .then(result => {
+              if (result.code === 1) {
+                  // 请求成功，解析返回的文章列表
+                  resolve(result.data); // 返回 List<ArticleVo>
+              } else {
+                  // 请求失败，返回错误信息
+                  reject(result.msg);
+              }
+          })
+          .catch(error => {
+              // 捕获请求过程中的错误
+              reject(`请求过程中发生错误: ${error.message}`);
+          });
+      });
+}
 function getArticles(userId) {
     // 返回一个 Promise
     return new Promise((resolve, reject) => {
@@ -77,6 +116,7 @@ function getArticles(userId) {
     });
 }
 
+
 function loadsTab()
 {
   tabLinks.forEach((link) => {
@@ -86,7 +126,6 @@ function loadsTab()
       link.classList.add("active");
 
       const tabKey = link.dataset.tab;
-      console.log("切换到 tab:", link,tabKey);
       loadTabsInfo(tabKey);
     });
   });
@@ -99,6 +138,7 @@ function loadTabsInfo(tabKey) {
 
   // 如果选中的是“我的文章”tab，去请求文章数据
   if (tabKey === "articles") {
+    console.log("调用");
     // 注意：user 需要能正确拿到 id
     const articlesPromise = getArticles(user.id);
 
@@ -134,7 +174,40 @@ function loadTabsInfo(tabKey) {
         // 可以在 tabContent 中提示错误信息
         tabContent.innerHTML = `<p style="color:red;">加载文章出错：${error}</p>`;
       });
-  } else {
+  } else if (tabKey === "dynamic")
+  {
+      const articlesLikedPromise = getArticlesLikedByUserId(user.id);
+      articlesLikedPromise
+            .then((articleList) => {
+                console.log("articleList:",articleList);
+              // 遍历文章列表，动态插入到 tabContent 中
+                articleList.forEach((item) => {
+                // 创建一个 <article> 元素
+                const article = document.createElement("article");
+                article.className = "activity-item";
+                article.innerHTML = `
+                  <header>
+                    <h6 style="color: #666">赞同了文章</h6>
+                    <h4>${item.title}</h4>
+                  </header>
+                  <div class="time-wrapper"> <!-- 新增时间容器 -->
+                    <time>${item.creationDate || "暂无时间"}</time>
+                  </div>
+                  <p>${item.content || "暂无内容"}</p>
+                  <footer>
+                    <a href="/article.html?articleId=${item.id}">查看详情</a>
+                  </footer>
+                `;
+                tabContent.appendChild(article);
+              });
+            })
+            .catch((error) => {
+              console.error("获取文章出错:", error);
+              // 可以在 tabContent 中提示错误信息
+              tabContent.innerHTML = `<p style="color:red;">加载文章出错：${error}</p>`;
+            });
+  }
+  else {
     // 如果选中的是其他 tab，则执行你原先的逻辑
     // （比如从一个本地对象 tabs 中获取内容后再渲染）
     // 这里给一个示例，假设你有个 tabs 对象存放其他 tab 的内容
@@ -167,4 +240,9 @@ function loadTabsInfo(tabKey) {
 document.addEventListener("DOMContentLoaded", () => {
     loadUserBasicInfo();
     loadsTab();
+    const initialTab = document.querySelector('[data-tab="dynamic"]');
+    if (initialTab) {
+        initialTab.classList.add("active"); // 设置初始active状态
+        loadTabsInfo("dynamic"); // 主动加载动态内容
+    }
 });

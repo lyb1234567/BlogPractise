@@ -104,9 +104,11 @@
       font-size: 1.1rem;
     }
     .activity-item {
+      position: relative; /* 为绝对定位创建参照 */
+      padding: 15px; /* 留出定位空间 */
       border-bottom: 1px solid #eee;
-      padding: 10px 0;
     }
+
     .activity-item header h4 {
       font-size: 1rem;
     }
@@ -122,7 +124,18 @@
     .activity-item footer {
       font-size: 0.85rem;
     }
+    .time-wrapper {
+      position: absolute;
+      top: 10px;      /* 微调垂直位置 */
+      right: 10px;    /* 微调水平位置 */
+      color: #999;    /* 浅灰色 */
+      font-size: 0.9em; /* 适当缩小字号 */
+    }
 
+    /* 可选：悬停时加深颜色 */
+    .time-wrapper:hover {
+      color: #666;
+    }
     /* 右侧：创作中心 + 个人成就 */
     .profile-right-pane {
       display: flex;

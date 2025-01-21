@@ -1,6 +1,7 @@
 package com.example.blog.mapper;
 
 
+import com.example.blog.entity.Article;
 import com.example.blog.entity.User;
 import org.apache.ibatis.annotations.*;
 
@@ -26,4 +27,7 @@ public interface LikeMapper {
 
     @Delete("DELETE FROM `like` WHERE user_id = #{userId} AND article_id = #{articleId}")
     void deleteLike(int userId, int articleId);
+
+    @Select("SELECT a.* FROM article a INNER JOIN `like` l ON a.id = l.article_id WHERE l.user_id = #{userId}")
+    List<Article> findLikedByUserId(int userId);
 }

@@ -99,6 +99,26 @@ public class ArticleController {
         return Result.success(userLikeVos);
     }
 
+    @GetMapping("/getArticlesLikedByUserId")
+    public Result<List<ArticleVo>> getArticleLikedByUserId(@RequestParam("userId") int userId)
+    {
+        log.info("获取用户点赞的文章: userId={}", userId);
+        List<Article> articles = articleService.likedByUserId(userId);
+        List<ArticleVo> articleVos = articles.stream()
+                .map(article -> ArticleVo.builder()
+                        .id(article.getId())
+                        .title(article.getTitle())
+                        .summary(article.getSummary())
+                        .likes(article.getLikes())
+                        .creationDate(article.getCreationDate())
+                        .userId(article.getUserId())
+                        .content(article.getContent())
+                        .build())
+                .collect(Collectors.toList());
+        return Result.success(articleVos);
+
+    }
+
     @GetMapping("/showArticle")
     public Result<ArticleVo> showArticle(@RequestParam("articleId") int articleId)
     {

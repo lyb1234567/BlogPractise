@@ -51,7 +51,6 @@ public class UserController {
     public Result<UserVo> getUser(@RequestParam("userId") int userId)
     {
         log.info("获取用户: userId={}", userId);
-        System.out.println("sdbabsd");
         User user = userService.findById(userId);
         UserVo userVo = UserVo.builder().userName(user.getUserName()).name(user.getName()).emailAddress(user.getEmailAddress()).build();
         return Result.success(userVo);

@@ -6,6 +6,7 @@ import com.example.blog.dto.ArticleCreateDTO;
 import com.example.blog.entity.Article;
 import com.example.blog.entity.User;
 import com.example.blog.mapper.ArticleMapper;
+import com.example.blog.mapper.LikeMapper;
 import com.example.blog.mapper.UserMapper;
 import com.example.blog.service.ArticleService;
 import com.example.blog.service.UserService;
@@ -22,10 +23,13 @@ import java.util.List;
 public class ArticleServiceImpl implements ArticleService {
 
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
 
     @Autowired
-    ArticleMapper articleMapper;
+    private ArticleMapper articleMapper;
+
+    @Autowired
+    private LikeMapper likeMapper;
     @Override
     public Article createArticle(ArticleCreateDTO articleCreateDTO) {
         Article article = new Article();
@@ -69,13 +73,23 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<Article> getByUserId(int userId) {
-        System.out.println("Get articles by userId: " + userId);
         User user = userMapper.findById(userId);
         if (user == null)
         {
             throw new UserNotFoundException("User not found");
         }
         List<Article> articles = articleMapper.findByUserId(userId);
+        return articles;
+    }
+
+    @Override
+    public List<Article> likedByUserId(int userId) {
+        User user = userMapper.findById(userId);
+        if (user ==null)
+        {
+            throw new UserNotFoundException("User not found");
+        }
+        List<Article>articles  = likeMapper.findLikedByUserId(userId);
         return articles;
     }
 }
