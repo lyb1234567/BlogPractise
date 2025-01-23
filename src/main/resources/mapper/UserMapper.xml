@@ -15,4 +15,28 @@
         VALUES (#{userName}, #{name}, #{emailAddress}, #{token}, #{password})
     </insert>
 
+    <select id="getLikeCount" >
+        SELECT
+        u.id AS user_id,
+        COALESCE(SUM(article_likes.like_count), 0) AS total_likes
+        FROM
+        user u
+        LEFT JOIN
+        article a ON u.id = a.user_id
+        LEFT JOIN
+        (SELECT
+        article_id,
+        COUNT(*) AS like_count
+        FROM
+        `like`
+        GROUP BY
+        article_id) AS article_likes
+        ON
+        a.id = article_likes.article_id
+        WHERE
+        u.id = #{userId}  -- 根据传入的 userId 过滤
+        GROUP BY
+        u.id;
+    </select>
+
 </mapper>

@@ -45,6 +45,8 @@ async function renderArticle() {
     const articleData = await articleResponse.json();
     if (articleData.code === 1 && articleData.data) {
       const article = articleData.data;
+      console.log("文章数据:", article);
+
 
       // 请求作者信息
       const userResponse = await fetch(`/user/getUser?userId=${article.userId}`, {
@@ -53,6 +55,8 @@ async function renderArticle() {
         }
       });
       if (!userResponse.ok) {
+          console.error("用户请求失败:", userResponse.status, userResponse.statusText);
+          console.error("用户 ID:", article.userId); // 打印出错的 userId
         throw new Error(`用户请求失败，状态码: ${userResponse.status}`);
       }
       const userData = await userResponse.json();

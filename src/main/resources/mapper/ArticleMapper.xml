@@ -22,6 +22,24 @@
         <result property="lastUpdatedBy" column="last_updated_by" />
         <result property="createdBy" column="created_by" />
     </resultMap>
+
+    <resultMap id="ArticleResultLikeMap" type="com.example.blog.entity.Article">
+        <id property="id" column="id" />
+        <result property="title" column="title" />
+        <result property="summary" column="summary" />
+        <result property="content" column="content" />
+        <result property="userId" column="user_id" />
+        <result property="categoryCode" column="category_code" />
+        <result property="views" column="views" />
+        <result property="likes" column="likes" />
+        <result property="commentCounts" column="comment_counts" />
+        <result property="status" column="status" />
+        <result property="deleteFlag" column="delete_flag" />
+        <result property="creationDate" column="like_creation_date" /> <!-- 映射 l.creation_date -->
+        <result property="lastUpdateDate" column="last_update_date" />
+        <result property="lastUpdatedBy" column="last_updated_by" />
+        <result property="createdBy" column="created_by" />
+    </resultMap>
     <select id="findTop5ByLikes" resultMap="ArticleResultMap">
         SELECT *
         FROM article

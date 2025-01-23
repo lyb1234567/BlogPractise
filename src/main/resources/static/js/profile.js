@@ -37,6 +37,79 @@ function loadUserBasicInfo()
      document.querySelector(".profile-avatar img").src = user.avatar;
 }
 
+function loadProfileStats() {
+    const statsList = document.querySelector('.profile-stats ul');
+
+    // 清空现有内容
+    statsList.innerHTML = '<li>⏳ 数据加载中...</li>';
+
+    // 并行获取数据
+    Promise.all([
+        getArticles(user.id),
+        getArticlesLikedByUserId(user.id)
+    ])
+    .then(([createdArticles, likedArticles]) => {
+        // 清空加载状态
+        statsList.innerHTML = '';
+
+        // 创建文章统计
+        const createdItem = document.createElement('li');
+        createdItem.innerHTML = `📚 创作 ${createdArticles.length} 篇文章`;
+        statsList.appendChild(createdItem);
+
+        // 点赞文章统计
+        const likedItem = document.createElement('li');
+        likedItem.innerHTML = `❤️ 点赞 ${likedArticles.length} 篇文章`;
+        statsList.appendChild(likedItem);
+
+        // 最佳回答者认证（示例逻辑）
+        if (createdArticles.length > 10) {
+            const bestAnswerItem = document.createElement('li');
+            bestAnswerItem.innerHTML = '🏆 优质内容创作者';
+            statsList.appendChild(bestAnswerItem);
+        }
+
+        let honorsItem = document.createElement('li');
+        // 其他成就数据
+        getLikeCount(user.id)
+          .then((likeCount) => {
+            console.log('点赞数:', likeCount);
+            honorsItem.innerHTML = `✨ 获得 ${likeCount} 次点赞`;
+            statsList.appendChild(honorsItem);
+          })
+          .catch((error) => {
+            console.error("获取点赞数失败:", error);
+            honorsItem.innerHTML = "✨ 获取点赞数失败"; // 错误时显示友好提示
+            statsList.appendChild(honorsItem);
+          });
+
+    }).catch(error => {
+        console.error('加载统计数据失败:', error);
+        statsList.innerHTML = `<li style="color:red;">❌ 数据加载失败: ${error}</li>`;
+    });
+
+    // 其他统计数据的获取（示例）
+    // getOtherStats(user.id).then(...)
+}
+async function getLikeCount(userId) {
+  try {
+    const token = localStorage.getItem("token"); // 从本地存储获取 Token
+    const response = await fetch(`/user/getLikeCount?userId=${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // 添加 Token
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`请求失败，状态码: ${response.status}`);
+    }
+    const totalLikes = await response.text();
+    return parseInt(totalLikes, 10) || 0;
+  } catch (error) {
+    console.error("获取点赞数失败:", error);
+    return 0;
+  }
+}
+
 function getArticlesLikedByUserId(userId)
 {
   return new Promise((resolve, reject) => {
@@ -138,32 +211,38 @@ function loadTabsInfo(tabKey) {
 
   // 如果选中的是“我的文章”tab，去请求文章数据
   if (tabKey === "articles") {
-    console.log("调用");
     // 注意：user 需要能正确拿到 id
     const articlesPromise = getArticles(user.id);
 
     articlesPromise
       .then((articleList) => {
-        console.log("获取到的文章列表:", articleList);
 
         // 遍历文章列表，动态插入到 tabContent 中
         articleList.forEach((item) => {
           // 创建一个 <article> 元素
           const article = document.createElement("article");
           article.className = "activity-item";
+            let creationDate;
+            if (item && item.creationDate) {
+                creationDate = item.creationDate.replace("T", " "); // 去掉 T，替换为空格
+            } else {
+                creationDate = "暂无时间"; // 如果 creationDate 不存在，显示默认值
+            }
 
-          // 你可以根据后端返回的字段名称自行替换
-          // 这里假设后端返回了 item.title, item.createTime, item.content 等字段
-          article.innerHTML = `
-            <header>
-              <h4>${item.title}</h4>
-              <time>${item.createTime || "暂无时间"}</time>
-            </header>
-            <p>${item.content || "暂无内容"}</p>
-            <footer>
-              <a href="/article.html?articleId=${item.id}">查看详情</a>
-            </footer>
-          `;
+            // 设置 article 的 HTML 内容
+            article.innerHTML = `
+                <header>
+                    <h6 style="color: #666">赞同了文章</h6>
+                    <h4>${item.title || "暂无标题"}</h4>
+                </header>
+                <div class="time-wrapper"> <!-- 新增时间容器 -->
+                    <time>${creationDate}</time>
+                </div>
+                <p>${item.content || "暂无内容"}</p>
+                <footer>
+                    <a href="/article.html?articleId=${item.id || ""}">查看详情</a>
+                </footer>
+            `;
 
           // 插入到 tabContent 容器中
           tabContent.appendChild(article);
@@ -179,24 +258,32 @@ function loadTabsInfo(tabKey) {
       const articlesLikedPromise = getArticlesLikedByUserId(user.id);
       articlesLikedPromise
             .then((articleList) => {
-                console.log("articleList:",articleList);
               // 遍历文章列表，动态插入到 tabContent 中
                 articleList.forEach((item) => {
                 // 创建一个 <article> 元素
                 const article = document.createElement("article");
                 article.className = "activity-item";
+                // 获取 creationDate 并格式化
+                let creationDate;
+                if (item && item.creationDate) {
+                    creationDate = item.creationDate.replace("T", " "); // 去掉 T，替换为空格
+                } else {
+                    creationDate = "暂无时间"; // 如果 creationDate 不存在，显示默认值
+                }
+
+                // 设置 article 的 HTML 内容
                 article.innerHTML = `
-                  <header>
-                    <h6 style="color: #666">赞同了文章</h6>
-                    <h4>${item.title}</h4>
-                  </header>
-                  <div class="time-wrapper"> <!-- 新增时间容器 -->
-                    <time>${item.creationDate || "暂无时间"}</time>
-                  </div>
-                  <p>${item.content || "暂无内容"}</p>
-                  <footer>
-                    <a href="/article.html?articleId=${item.id}">查看详情</a>
-                  </footer>
+                    <header>
+                        <h6 style="color: #666">赞同了文章</h6>
+                        <h4>${item.title || "暂无标题"}</h4>
+                    </header>
+                    <div class="time-wrapper"> <!-- 新增时间容器 -->
+                        <time>${creationDate}</time>
+                    </div>
+                    <p>${item.content || "暂无内容"}</p>
+                    <footer>
+                        <a href="/article.html?articleId=${item.id || ""}">查看详情</a>
+                    </footer>
                 `;
                 tabContent.appendChild(article);
               });
@@ -240,6 +327,7 @@ function loadTabsInfo(tabKey) {
 document.addEventListener("DOMContentLoaded", () => {
     loadUserBasicInfo();
     loadsTab();
+    loadProfileStats();
     const initialTab = document.querySelector('[data-tab="dynamic"]');
     if (initialTab) {
         initialTab.classList.add("active"); // 设置初始active状态

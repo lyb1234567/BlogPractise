@@ -55,4 +55,11 @@ public class UserController {
         UserVo userVo = UserVo.builder().userName(user.getUserName()).name(user.getName()).emailAddress(user.getEmailAddress()).build();
         return Result.success(userVo);
     }
+
+    @GetMapping("/getLikeCount")
+    public int getLikeCount(@RequestParam("userId") int userId)
+    {
+        log.info("获取用户点数: userId={}", userId);
+        return userService.getLikeCount(userId);
+    }
 }

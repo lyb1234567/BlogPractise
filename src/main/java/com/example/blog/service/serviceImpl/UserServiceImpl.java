@@ -97,4 +97,13 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
+
+    @Override
+    public int getLikeCount(int userId) {
+        User user = userMapper.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User Not Found with id: " + userId);
+        }
+        return userMapper.getLikeCount(userId);
+    }
 }

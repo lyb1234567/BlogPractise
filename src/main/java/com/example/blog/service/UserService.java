@@ -18,4 +18,6 @@ public interface UserService {
     String getUserName(int userId);
 
     User findById(int userId);
+
+    int getLikeCount(int userId);
 }

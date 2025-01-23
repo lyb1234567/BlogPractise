@@ -39,4 +39,6 @@ public interface UserMapper {
             @Result(property = "password", column = "password")
     })
     User findById(int userId);
+
+    int getLikeCount(int userId);
 }

@@ -28,6 +28,7 @@ public interface LikeMapper {
     @Delete("DELETE FROM `like` WHERE user_id = #{userId} AND article_id = #{articleId}")
     void deleteLike(int userId, int articleId);
 
-    @Select("SELECT a.* FROM article a INNER JOIN `like` l ON a.id = l.article_id WHERE l.user_id = #{userId}")
+    @Select("SELECT a.*, l.creation_date AS like_creation_date FROM article a INNER JOIN `like` l ON a.id = l.article_id WHERE l.user_id = #{userId}")
+    @ResultMap("com.example.blog.mapper.ArticleMapper.ArticleResultLikeMap")
     List<Article> findLikedByUserId(int userId);
 }

@@ -1,207 +1,311 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
 * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
         "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
         "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-      background-color: #f5f5f5;
-      color: #333;
-    }
-    a {
-      color: #3498db;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
+    background-color: #f5f5f5;
+    color: #333;
+}
 
-    /* 页面容器：控制整体宽度居中 */
-    .container {
-      width: 1200px;
-      max-width: 90%;
-      margin: 0 auto;
-    }
+a {
+    color: #3498db;
+    text-decoration: none;
+}
 
-    /* 个人信息区域：位于页面左上 */
-    .profile-info-section {
-      background-color: #fff;
-      border-radius: 4px;
-      padding: 20px;
-      margin-top: 20px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-    .profile-avatar img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    .profile-details .profile-name {
-      font-size: 1.2rem;
-      margin-bottom: 8px;
-    }
-    .profile-details .profile-desc {
-      font-size: 0.9rem;
-      color: #666;
-      margin-bottom: 8px;
-    }
-    .edit-profile-btn {
-      padding: 6px 12px;
-      font-size: 0.85rem;
-      background-color: #3498db;
-      border: none;
-      border-radius: 4px;
-      color: #fff;
-      cursor: pointer;
-    }
-    .edit-profile-btn:hover {
-      background-color: #2980b9;
-    }
+a:hover {
+    text-decoration: underline;
+}
 
-    /* 导航栏：紧接个人信息区域下方，横向排列 */
-    .profile-nav {
-      background-color: #fff;
-      border-radius: 4px;
-      margin-top: 10px;
-      padding: 10px 20px;
-    }
-    .profile-nav ul {
-      list-style: none;
-      display: flex;
-      gap: 1rem;
-    }
-    .profile-nav li {
-      padding: 6px 8px;
-      cursor: pointer;
-    }
-    .profile-nav li.active {
-      border-bottom: 2px solid #3498db;
-      color: #3498db;
-    }
+/* 顶部导航栏样式 */
+.global-nav {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 12px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
 
-    /* 主体布局：左侧文章/回答列表，右侧创作中心+个人成就 */
-    .main-layout {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 20px;
-      margin-top: 20px;
-    }
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
 
-    /* 主要内容：文章或回答列表 */
-    .profile-main {
-      background-color: #fff;
-      border-radius: 4px;
-      padding: 20px;
-    }
-    .profile-main h3 {
-      margin-bottom: 1rem;
-      font-size: 1.1rem;
-    }
-    .activity-item {
-      position: relative; /* 为绝对定位创建参照 */
-      padding: 15px; /* 留出定位空间 */
-      border-bottom: 1px solid #eee;
-    }
+.nav-logo {
+    display: flex;
+    align-items: center;
+    color: #1a1a1a;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+}
 
-    .activity-item header h4 {
-      font-size: 1rem;
-    }
-    .activity-item header time {
-      margin-left: 10px;
-      font-size: 0.85rem;
-      color: #999;
-    }
-    .activity-item p {
-      margin: 8px 0;
-      font-size: 0.9rem;
-    }
-    .activity-item footer {
-      font-size: 0.85rem;
-    }
-    .time-wrapper {
-      position: absolute;
-      top: 10px;      /* 微调垂直位置 */
-      right: 10px;    /* 微调水平位置 */
-      color: #999;    /* 浅灰色 */
-      font-size: 0.9em; /* 适当缩小字号 */
-    }
+.nav-logo:hover {
+    color: #175199;
+}
 
-    /* 可选：悬停时加深颜色 */
-    .time-wrapper:hover {
-      color: #666;
-    }
-    /* 右侧：创作中心 + 个人成就 */
-    .profile-right-pane {
-      display: flex;
-      flex-direction: column;
-      gap: 20px; /* 创作中心和个人成就之间的间距 */
-    }
+.icon-home {
+    margin-right: 8px;
+    fill: currentColor;
+}
 
-    /* 创作中心 */
-    .creation-center {
-      background-color: #fff;
-      border-radius: 4px;
-      padding: 20px;
-    }
-    .creation-center h3 {
-      font-size: 1rem;
-      margin-bottom: 10px;
-    }
-    .creation-center p {
-      font-size: 0.9rem;
-      margin-bottom: 10px;
-      color: #666;
-    }
-    .create-button {
-      padding: 8px 16px;
-      font-size: 0.85rem;
-      background-color: #2ecc71;
-      border: none;
-      border-radius: 4px;
-      color: #fff;
-      cursor: pointer;
-    }
-    .create-button:hover {
-      background-color: #27ae60;
-    }
+.nav-search {
+    position: relative;
+    width: 360px;
+}
 
-    /* 个人成就 */
-    .profile-stats {
-      background-color: #fff;
-      border-radius: 4px;
-      padding: 20px;
-      /* 如需始终固定，可使用 position: sticky; bottom: 0; */
-    }
-    .profile-stats h3 {
-      font-size: 1rem;
-      margin-bottom: 10px;
-    }
-    .profile-stats ul {
-      list-style: none;
-    }
-    .profile-stats li {
-      margin-bottom: 6px;
-      font-size: 0.9rem;
-    }
+.search-input {
+    width: 100%;
+    padding: 8px 40px 8px 16px;
+    border: 1px solid #ebebeb;
+    border-radius: 20px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
 
-    /* 底部区域（可酌情保留或删除） */
-    .global-footer {
-      background-color: #fff;
-      margin-top: 20px;
-      border-top: 1px solid #ddd;
-      padding: 20px;
-    }
-    .footer-info {
-      text-align: center;
-    }
-    .footer-links a {
-      color: #3498db;
-      margin: 0 6px;
-      font-size: 0.85rem;
-    }
+.search-input:focus {
+    outline: none;
+    border-color: #0084ff;
+    box-shadow: 0 0 0 2px rgba(0,132,255,0.1);
+}
+
+.search-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.icon-search {
+    fill: #8590a6;
+    transition: fill 0.2s;
+}
+
+.search-input:focus + .search-btn .icon-search {
+    fill: #0084ff;
+}
+
+/* 页面容器 */
+.container {
+    width: 1200px;
+    max-width: 90%;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* 个人信息区域 */
+.profile-info-section {
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 20px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-avatar img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-details .profile-name {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.profile-details .profile-desc {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.edit-profile-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    background-color: #3498db;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.edit-profile-btn:hover {
+    background-color: #2980b9;
+}
+
+/* 导航栏 */
+.profile-nav {
+    background-color: #fff;
+    border-radius: 4px;
+    margin-top: 10px;
+    padding: 10px 20px;
+}
+
+.profile-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+.profile-nav li {
+    padding: 6px 8px;
+    cursor: pointer;
+}
+
+.profile-nav li.active {
+    border-bottom: 2px solid #3498db;
+    color: #3498db;
+}
+
+/* 主体布局 */
+.main-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* 主要内容 */
+.profile-main {
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.profile-main h3 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.activity-item {
+    position: relative;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.activity-item header h4 {
+    font-size: 1rem;
+}
+
+.activity-item header time {
+    margin-left: 10px;
+    font-size: 0.85rem;
+    color: #999;
+}
+
+.activity-item p {
+    margin: 8px 0;
+    font-size: 0.9rem;
+}
+
+.activity-item footer {
+    font-size: 0.85rem;
+}
+
+.time-wrapper {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #999;
+    font-size: 0.9em;
+}
+
+.time-wrapper:hover {
+    color: #666;
+}
+
+/* 右侧面板 */
+.profile-right-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 创作中心 */
+.creation-center {
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.creation-center h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.creation-center p {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+.create-button {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    background-color: #2ecc71;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.create-button:hover {
+    background-color: #27ae60;
+}
+
+/* 个人成就 */
+.profile-stats {
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.profile-stats h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.profile-stats ul {
+    list-style: none;
+}
+
+.profile-stats li {
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+/* 底部区域 */
+.global-footer {
+    background-color: #fff;
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding: 20px;
+}
+
+.footer-info {
+    text-align: center;
+}
+
+.footer-links a {
+    color: #3498db;
+    margin: 0 6px;
+    font-size: 0.85rem;
+}
