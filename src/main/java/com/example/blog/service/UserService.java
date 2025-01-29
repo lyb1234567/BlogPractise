@@ -6,6 +6,8 @@ import com.example.blog.entity.User;
 import com.example.blog.vo.UserRegisterVo;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 public interface UserService {
 
 
@@ -20,4 +22,8 @@ public interface UserService {
     User findById(int userId);
 
     int getLikeCount(int userId);
+
+    void insertByFollowerIdFolloweeId(int followerId, int followeeId);
+
+    List<User> getFollowers(int userId);
 }

@@ -39,7 +39,8 @@ function updateHeader() {
                 userNameDisplay.innerHTML = `<img src="${user.avatar}" alt="${user.name}'s avatar" class="avatar" id="userAvatar">`;
                 userNameDisplay.addEventListener('click', () => {
                     // 跳转到 profile.html
-                    window.location.href = '/profile.html';
+                    console.log("跳转到:"+user.id);
+                    window.location.href = `/profile.html?userId=${user.id}`;
                 });
                 userNameDisplay.classList.add('avatar-button-style');
             } else {

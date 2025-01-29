@@ -3,6 +3,7 @@ package com.example.blog.controller;
 import blog_common.result.Result;
 import com.example.blog.dto.UserLoginDTO;
 import com.example.blog.dto.UserRegisterDTO;
+import com.example.blog.entity.Follow;
 import com.example.blog.mapper.UserMapper;
 import com.example.blog.entity.User;
 import com.example.blog.service.UserService;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
@@ -52,7 +54,7 @@ public class UserController {
     {
         log.info("获取用户: userId={}", userId);
         User user = userService.findById(userId);
-        UserVo userVo = UserVo.builder().userName(user.getUserName()).name(user.getName()).emailAddress(user.getEmailAddress()).build();
+        UserVo userVo = UserVo.builder().userId(user.getId()).userName(user.getUserName()).name(user.getName()).avatar(user.getAvatar()).emailAddress(user.getEmailAddress()).build();
         return Result.success(userVo);
     }
 
@@ -62,4 +64,22 @@ public class UserController {
         log.info("获取用户点数: userId={}", userId);
         return userService.getLikeCount(userId);
     }
+
+    @PostMapping("/follow")
+    public Result<String> insertByFollowerIdFolloweeId(@RequestParam("followerId") int followerId, @RequestParam("followeeId") int followeeId) {
+        log.info("开始关注: followerId={}, followeeId={}", followerId, followeeId);
+            userService.insertByFollowerIdFolloweeId(followerId, followeeId);
+            return Result.success("关注成功");
+    }
+
+    @GetMapping("/getFollowers")
+    public Result<List<UserVo>> getFollowers(@RequestParam("userId") int userId)
+    {
+        log.info("获取关注: userId={}", userId);
+        List <User> users = userService.getFollowers(userId);
+        List<UserVo> userVos = users.stream().map(user -> UserVo.builder().userId(user.getId()).userName(user.getUserName()).name(user.getName()).emailAddress(user.getEmailAddress()).avatar(user.getAvatar()).build()).collect(Collectors.toList());
+        return Result.success(userVos);
+    }
+
+
 }

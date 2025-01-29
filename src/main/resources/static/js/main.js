@@ -53,7 +53,7 @@ async function fetchComments(articleId) {
     try {
         const response = await fetch(`/comment/getComments?articleId=${articleId}`, {
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
             }
         });
         const result = await response.json();

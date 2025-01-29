@@ -10,14 +10,14 @@
         <result property="emailAddress" column="email_address"/>
     </resultMap>
 
+
     <insert id="insert" parameterType="com.example.blog.entity.User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO user (user_name, name, email_address, token, password)
         VALUES (#{userName}, #{name}, #{emailAddress}, #{token}, #{password})
     </insert>
 
-    <select id="getLikeCount" >
+    <select id="getLikeCount" resultType="java.lang.Integer">
         SELECT
-        u.id AS user_id,
         COALESCE(SUM(article_likes.like_count), 0) AS total_likes
         FROM
         user u
@@ -34,7 +34,7 @@
         ON
         a.id = article_likes.article_id
         WHERE
-        u.id = #{userId}  -- 根据传入的 userId 过滤
+        u.id = #{userId}  <!-- 根据传入的 userId 过滤 -->
         GROUP BY
         u.id;
     </select>

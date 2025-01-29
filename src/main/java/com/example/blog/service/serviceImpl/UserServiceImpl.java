@@ -8,12 +8,15 @@ import blog_common.exception.InsertUserException;
 import com.example.blog.dto.UserLoginDTO;
 import com.example.blog.dto.UserRegisterDTO;
 import com.example.blog.entity.User;
+import com.example.blog.mapper.FollowMapper;
 import com.example.blog.mapper.UserMapper;
 import com.example.blog.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -23,13 +26,14 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Autowired
+    private FollowMapper followMapper;
+
+    @Autowired
     private JwtUtil jwtUtil;
     @Override
     public User login(UserLoginDTO userLoginDTO) {
         String userName = userLoginDTO.getUserName();
         String password = userLoginDTO.getPassWord();
-        System.out.println(userName);
-        System.out.println("Password: " + password);
 //          根据用户名查询数据库
           User user = userMapper.getByUserName(userName);
 
@@ -105,5 +109,34 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException("User Not Found with id: " + userId);
         }
         return userMapper.getLikeCount(userId);
+    }
+
+    @Override
+    public void insertByFollowerIdFolloweeId(int followerId, int followeeId) {
+        User follower = userMapper.findById(followerId);
+        User followee = userMapper.findById(followeeId);
+        if (follower == null || followee == null) {
+            throw new UserNotFoundException("User Not Found");
+        }
+        try
+        {
+            followMapper.insertByFollowerIdFolloweeId(followerId, followeeId);
+        }catch (Exception e)
+        {
+            System.out.println("--------------------------------------");
+            e.printStackTrace(); // 打印真正的异常类名
+            throw e; // 再抛出
+        }
+    }
+
+    @Override
+    public List<User> getFollowers(int userId) {
+        User user = userMapper.findById(userId);
+        if (user == null)
+        {
+            throw new UserNotFoundException("User Not Found with id: " + userId);
+        }
+        List<User> users = userMapper.getFollowers(userId);
+        return users;
     }
 }

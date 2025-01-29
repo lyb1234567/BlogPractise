@@ -14,4 +14,6 @@ public class UserVo {
     private String emailAddress;
 
     private String avatar;
+
+    private long  userId;
 }

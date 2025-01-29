@@ -1,6 +1,7 @@
 package com.example.blog.mapper;
 
 import com.example.blog.entity.User;
+import com.example.blog.vo.UserVo;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -41,4 +42,8 @@ public interface UserMapper {
     User findById(int userId);
 
     int getLikeCount(int userId);
+
+    @Select("SELECT u.* FROM user u INNER JOIN follow f ON u.id = f.followee_id WHERE f.follower_id = #{userId}")
+    @ResultMap("userResultMap")
+    List<User> getFollowers(int userId);
 }
