@@ -81,5 +81,21 @@ public class UserController {
         return Result.success(userVos);
     }
 
+   @PostMapping("/unfollow")
+    public Result<String> unfollow(@RequestParam("followerId") int followerId, @RequestParam("followeeId") int followeeId)
+   {
+        log.info("取消关注: followerId={}, followeeId={}", followerId, followeeId);
+        Follow follow = new Follow();
+        userService.deleteByFollowerIdFolloweeId(followerId,followeeId);
+        return Result.success("取消关注成功");
+   }
+
+   @GetMapping("checkFollowStatus")
+    public Result<Boolean> checkFollowStatus(@RequestParam("followerId") int followerId, @RequestParam("followeeId") int followeeId) {
+        log.info("检查关注状态: followerId={}, followeeId={}", followerId, followeeId);
+        boolean isFollow = userService.checkFollowStatus(followerId, followeeId);
+        return Result.success(isFollow);
+    }
+
 
 }

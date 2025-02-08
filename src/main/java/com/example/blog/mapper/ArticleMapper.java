@@ -8,6 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface ArticleMapper {
+
+
+
     void insert(Article article);
 
     List<Article> findTop5ByLikes();
@@ -33,4 +36,6 @@ public interface ArticleMapper {
     @Select("SELECT * FROM article WHERE user_id = #{userId}")
     @ResultMap("com.example.blog.mapper.ArticleMapper.ArticleResultMap")
     List<Article> findByUserId(int userId);
+
+
 }

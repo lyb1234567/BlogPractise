@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown文章编辑器</title>
+  <!-- 引入外部 CSS 文件 -->
+  <link rel="stylesheet" href="css/articleEdit.css">
+  <!-- CDN：marked 用于解析 Markdown -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@4.0.0/marked.min.js"></script>
+  <!-- CDN：KaTeX 用于渲染数学公式 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <!-- CDN：highlight.js 用于代码块语法高亮 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/default.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+</head>
+<body>
+<nav class="global-nav">
+  <div class="nav-container">
+    <a href="/" class="nav-logo">
+      <svg class="icon-home" viewBox="0 0 24 24" width="24" height="24">
+        <path d="M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2z"/>
+      </svg>
+      首页
+    </a>
+  </div>
+</nav>
+<!-- 页面顶部标题 -->
+<h1>文章编辑器</h1>
+<div class="container">
+  <!-- 编辑区：包含文章标题、摘要、正文、上传封面及提交按钮 -->
+  <div class="editor">
+    <div>
+      <label for="title">文章标题：</label>
+      <input type="text" id="title" placeholder="请输入文章标题">
+    </div>
+    <div>
+      <label for="abstract">摘要：</label>
+      <textarea id="abstract" placeholder="请输入摘要"></textarea>
+    </div>
+    <div>
+      <label for="content">正文内容（支持 Markdown）：</label>
+      <textarea id="content" placeholder="请输入正文内容，支持 Markdown 语法及数学公式，例如：$E=mc^2$ 或 $$\\int_0^1 x^2dx$$"></textarea>
+    </div>
+    <div>
+      <label for="coverUpload">上传封面：</label>
+      <input type="file" id="coverUpload" accept="image/*">
+    </div>
+    <div>
+      <!-- 提交按钮，点击后会调用后端接口 -->
+      <button id="submitBtn">提交文章</button>
+    </div>
+  </div>
+  <!-- 预览区：实时显示渲染后的效果 -->
+  <div class="preview" id="preview">
+    <!-- 渲染内容将在此实时更新 -->
+  </div>
+</div>
+<!-- 显示最后保存时间戳 -->
+<div id="lastSaved" style="margin-top:10px; text-align:right;">最后保存时间：--</div>
+
+<!-- 引入外部 JavaScript 文件 -->
+<script src="js/articleEdit.js"></script>
+</body>
+</html>

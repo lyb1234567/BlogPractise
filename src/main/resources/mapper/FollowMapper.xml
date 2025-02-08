@@ -12,9 +12,22 @@
         <result property="followeeId" column="followee_id"/>
         <result property="followerId" column="follower_id"/>
     </resultMap>
+
     <insert id="insertByFollowerIdFolloweeId">
         INSERT INTO follow (follower_id, followee_id, created_at, updated_at)
         VALUES (#{followerId}, #{followeeId}, NOW(), NOW());
     </insert>
+    <delete id="deleteByFollowerIdFolloweeId">
+        DELETE FROM follow  <!-- 替换为你的关注表名 -->
+        WHERE follower_id = #{followerId}  <!-- 假设数据库列名为 follower_id -->
+        AND followee_id = #{followeeId}  <!-- 假设数据库列名为 followee_id -->
+    </delete>
+    <select id="findByFollowerAndFollowee" resultType="com.example.blog.entity.Follow">
+        SELECT *
+        FROM follow
+        WHERE follower_id = #{followerId}
+        AND followee_id = #{followeeId}
+        LIMIT 1
+    </select>
 
 </mapper>

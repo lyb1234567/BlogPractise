@@ -219,6 +219,7 @@ function loadTabsInfo(tabKey, userId) {
         .then(result => {
             if (result.code === 1) {
                 const followers = result.data;
+                console.log(`获取到关注列表: ${JSON.stringify(followers, null, 2)}, userid: ${userId}`);
                 tabContent.innerHTML = followers.length === 0
                     ? "<p>你还没有关注任何人</p>"
                     : "";

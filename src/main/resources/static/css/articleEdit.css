@@ -1,0 +1,137 @@
+/* 全局样式 */
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+/* 外层容器，左右分栏布局，固定高度 800px，并显示滚动条 */
+.container {
+  display: flex;
+  height: 800px;
+  border: 1px solid #ccc;
+  overflow: hidden;
+}
+/* 编辑区与预览区均带内边距及垂直滚动条 */
+.editor, .preview {
+  padding: 10px;
+  overflow-y: auto;
+}
+/* 编辑区占 60%，右侧预览区占 40% */
+.editor {
+  flex: 0 0 60%;
+  border-right: 1px solid #ccc;
+}
+.preview {
+  flex: 0 0 40%;
+  background: #f9f9f9;
+}
+/* 输入区域样式 */
+input[type="text"], textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+/* 按钮样式 */
+button {
+  padding: 8px 16px;
+  margin-right: 10px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #45a049;
+}
+/* 响应式：手机屏幕下左右堆叠 */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+  }
+  .editor, .preview {
+    flex: 1 1 100%;
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+  }
+  .preview {
+    border-bottom: none;
+  }
+}
+/* 预览内容的额外样式 */
+.preview h1 {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+.preview blockquote {
+  color: gray;
+  border-left: 4px solid #ccc;
+  padding-left: 10px;
+  margin: 10px 0;
+}
+.global-nav {
+    background-color: #f8f8f8; /* 浅灰色背景 */
+    border-bottom: 1px solid #eee; /* 底部细边框 */
+    padding: 10px 20px; /* 上下内边距10px，左右20px */
+    position: sticky; /* 粘性定位 */
+    top: 0;
+    z-index: 100; /* 确保在其他内容之上 */
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between; /* 左右两端对齐 */
+    align-items: center; /* 垂直居中对齐 */
+    max-width: 1200px; /* 最大宽度限制 */
+    margin: 0 auto; /* 水平居中 */
+}
+
+/* 首页 Logo 样式 */
+.nav-logo {
+    display: flex;
+    align-items: center; /* 图标和文字垂直居中 */
+    color: #333; /* 深灰色文字颜色 */
+    text-decoration: none; /* 移除下划线 */
+    font-weight: bold; /* 字体加粗 */
+}
+
+.icon-home {
+    fill: #4CAF50; /* 首页图标填充色，绿色 */
+    margin-right: 8px; /* 图标和文字间距 */
+}
+
+/* 搜索框样式 (如果需要，虽然你的编辑器例子中没有搜索框，但nav-container默认是space-between，这里保留以防未来扩展) */
+.nav-search {
+    display: flex;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px; /* 左侧圆角 */
+    margin-right: -1px; /* 与按钮紧邻 */
+}
+
+.search-btn {
+    background-color: #4CAF50; /* 绿色按钮背景 */
+    color: white; /* 白色文字 */
+    border: none;
+    padding: 8px 12px;
+    border-radius: 0 4px 4px 0; /* 右侧圆角 */
+    cursor: pointer;
+}
+
+.icon-search {
+    fill: white; /* 搜索图标白色填充 */
+}

@@ -74,11 +74,11 @@
         #{likes},
         #{commentCounts},
         #{status},
-        #{delete_flag},
+        #{deleteFlag},
         #{creationDate},
         #{lastUpdateDate},
-        #{last_updated_by},
-        #{created_by}
+        #{lastUpdatedBy},
+        #{createdBy}
         )
     </insert>
 </mapper>

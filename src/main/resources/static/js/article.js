@@ -4,6 +4,7 @@ let rootComments = []; // 顶级评论数组
 
 // ========== 主题切换 (示例) ==========
 const toggleThemeBtn = document.getElementById("toggleThemeBtn");
+
 if (toggleThemeBtn) {
   toggleThemeBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark-theme");
@@ -16,6 +17,7 @@ if (toggleThemeBtn) {
 // ========== 获取 URL 中的 articleId ==========
 const urlParams = new URLSearchParams(window.location.search);
 const articleId = urlParams.get("articleId");
+const followAuthorBtn = document.getElementById("followAuthorBtn");
 
 // ========== 渲染文章内容 ==========
 async function renderArticle() {
@@ -23,19 +25,24 @@ async function renderArticle() {
   const articleAuthorEl = document.getElementById("articleAuthor");
   const articleContentEl = document.getElementById("articleContent");
   const articleNotFoundEl = document.getElementById("articleNotFound");
+  const articleAuthorAvatarEl = document.getElementById("articleAuthorAvatar");
+  const followAuthorBtn = document.getElementById("followAuthorBtn");
+
+  // 初始隐藏关注按钮，防止闪烁
+  followAuthorBtn.style.display = "none";
 
   if (!articleId) {
     articleTitleEl.textContent = "文章 ID 无效";
     articleAuthorEl.textContent = "作者：未知";
+    articleAuthorAvatarEl.src = 'images/default-avatar.png';
+    articleAuthorAvatarEl.alt = '作者未知';
     articleContentEl.textContent = "未提供有效的文章 ID。";
     return;
   }
 
   try {
     const articleResponse = await fetch(`/article/getArticle?articleId=${articleId}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
 
     if (!articleResponse.ok) {
@@ -45,43 +52,183 @@ async function renderArticle() {
     const articleData = await articleResponse.json();
     if (articleData.code === 1 && articleData.data) {
       const article = articleData.data;
-      console.log("文章数据:", article);
 
+      // 渲染文章标题和内容
+      articleTitleEl.textContent = article.title || "无标题";
+      articleContentEl.innerHTML = article.content || "无内容";
 
       // 请求作者信息
       const userResponse = await fetch(`/user/getUser?userId=${article.userId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (!userResponse.ok) {
-          console.error("用户请求失败:", userResponse.status, userResponse.statusText);
-          console.error("用户 ID:", article.userId); // 打印出错的 userId
-        throw new Error(`用户请求失败，状态码: ${userResponse.status}`);
+        console.error("用户请求失败:", userResponse.status);
+        articleAuthorEl.textContent = "作者：未知";
+        articleAuthorAvatarEl.src = 'images/default-avatar.png';
+        articleAuthorAvatarEl.alt = '作者未知';
+      } else {
+        const userData = await userResponse.json();
+        if (userData.code === 1 && userData.data) {
+          articleAuthorEl.textContent = `作者：${userData.data.name || "未知"}`;
+          articleAuthorAvatarEl.src = userData.data.avatar || 'images/default-avatar.png';
+          articleAuthorAvatarEl.alt = userData.data.name || '作者';
+        } else {
+          articleAuthorEl.textContent = "作者：未知";
+          articleAuthorAvatarEl.src = 'images/default-avatar.png';
+          articleAuthorAvatarEl.alt = '作者未知';
+        }
       }
-      const userData = await userResponse.json();
-
-      // 渲染文章标题、作者、内容
-      articleTitleEl.textContent = article.title || "无标题";
-      articleAuthorEl.textContent = `作者：${userData.code === 1 && userData.data ? userData.data.name : "未知"}`;
-      articleContentEl.innerHTML = article.content || "无内容";
 
       // 隐藏“未找到”，显示文章内容
       articleNotFoundEl.style.display = "none";
       articleTitleEl.style.display = "block";
       articleAuthorEl.style.display = "block";
+      articleAuthorAvatarEl.style.display = "block";
       articleContentEl.style.display = "block";
+
+      // 获取当前用户（如果已登录）
+      const currentUser = JSON.parse(localStorage.getItem('user'));
+      if (currentUser) {
+        // 调用封装的函数更新关注按钮状态
+        await updateFollowButton(currentUser.id, article.userId);
+      }
+
+      // 绑定关注按钮事件（只在按钮可见时绑定）
+      followAuthorBtn.dataset.followeeId = article.userId;
+      followAuthorBtn.addEventListener('click', async () => {
+        // 根据按钮当前文本判断调用关注还是取消关注
+        if (followAuthorBtn.textContent === "已关注") {
+          await unfollowAuthor(article.userId);
+        } else {
+          await followAuthor(article.userId);
+        }
+      });
     } else {
       showArticleNotFound();
     }
   } catch (error) {
-    console.error("加载文章失败:", error);
-    articleTitleEl.textContent = "加载失败";
+    console.error("错误:", error);
     articleAuthorEl.textContent = "作者：未知";
-    articleContentEl.textContent = "无法加载文章内容，请稍后重试。";
+    articleAuthorAvatarEl.src = 'images/default-avatar.png';
+    articleAuthorAvatarEl.alt = '作者未知';
   }
 }
 
+/**
+ * 检查关注状态并更新关注按钮
+ * 如果当前用户是作者本人，则隐藏按钮；
+ * 否则，根据接口结果显示“已关注”或“关注”
+ */
+async function updateFollowButton(followerId, followeeId) {
+  const followAuthorBtn = document.getElementById("followAuthorBtn");
+  // 如果是自己的文章，隐藏关注按钮
+  if (parseInt(followerId, 10) === parseInt(followeeId, 10)) {
+    followAuthorBtn.style.display = "none";
+    return;
+  }
+  // 否则，调用接口检查关注状态
+  const followStatusResponse = await fetch(
+    `/user/checkFollowStatus?followerId=${followerId}&followeeId=${followeeId}`,
+    { headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } }
+  );
+  const followStatusData = await followStatusResponse.json();
+  if (followStatusData.code === 1 && followStatusData.data) {
+    followAuthorBtn.textContent = "已关注";
+  } else {
+    followAuthorBtn.textContent = "关注";
+  }
+  // 显示按钮
+  followAuthorBtn.style.display = "inline-block";
+}
+
+
+
+async function followAuthor(followeeId) {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+        alert("请先登录才能关注作者");
+        return;
+    }
+    const followerId = user.id;
+
+    if (!followeeId) {
+        console.error("Followee ID is missing.");
+        alert("关注失败，作者信息缺失");
+        return;
+    }
+
+    try {
+        const formData = new URLSearchParams();
+        formData.append('followerId', followerId);
+        formData.append('followeeId', followeeId);
+
+        const response = await fetch('/user/follow', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: formData.toString()
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.code === 1) {
+            followAuthorBtn.textContent = "已关注";  // 更新按钮文本
+            followAuthorBtn.disabled = false;  // 禁用按钮
+        } else {
+            console.error("关注失败:", result.message || '接口返回错误');
+            alert("关注失败，请稍后重试");
+        }
+    } catch (error) {
+        console.error("关注请求错误:", error);
+        alert("关注失败，请检查网络");
+    }
+}
+
+// 取消关注
+async function unfollowAuthor(followeeId) {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+        alert("请先登录才能取消关注");
+        return;
+    }
+    const followerId = user.id;
+
+    if (!followeeId) {
+        console.error("Followee ID is missing.");
+        alert("取消关注失败，作者信息缺失");
+        return;
+    }
+
+    try {
+        const formData = new URLSearchParams();
+        formData.append('followerId', followerId);
+        formData.append('followeeId', followeeId);
+
+        const response = await fetch('/user/unfollow', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: formData.toString()
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.code === 1) {
+            followAuthorBtn.textContent = "关注";  // 更新按钮文本
+            followAuthorBtn.disabled = false;  // 启用按钮
+        } else {
+            console.error("取消关注失败:", result.message || '接口返回错误');
+            alert("取消关注失败，请稍后重试");
+        }
+    } catch (error) {
+        console.error("取消关注请求错误:", error);
+        alert("取消关注失败，请检查网络");
+    }
+}
 function showArticleNotFound() {
   const articleTitleEl = document.getElementById("articleTitle");
   const articleAuthorEl = document.getElementById("articleAuthor");

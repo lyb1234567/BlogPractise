@@ -7,6 +7,7 @@ import blog_common.exception.AccountNotFoundException;
 import blog_common.exception.InsertUserException;
 import com.example.blog.dto.UserLoginDTO;
 import com.example.blog.dto.UserRegisterDTO;
+import com.example.blog.entity.Follow;
 import com.example.blog.entity.User;
 import com.example.blog.mapper.FollowMapper;
 import com.example.blog.mapper.UserMapper;
@@ -138,5 +139,48 @@ public class UserServiceImpl implements UserService {
         }
         List<User> users = userMapper.getFollowers(userId);
         return users;
+    }
+
+    @Override
+    public void deleteByFollowerIdFolloweeId(int followerId,int followeeId) {
+
+        User follower = userMapper.findById(followerId);
+        User followee = userMapper.findById(followeeId);
+        if (follower == null)
+        {
+            throw new UserNotFoundException("User Not Found with id: " + followerId);
+        }
+
+        if (followee == null)
+        {
+            throw new UserNotFoundException("User Not Found with id: " + followeeId);
+        }
+
+        followMapper.deleteByFollowerIdFolloweeId(followerId, followeeId);
+    }
+
+    @Override
+    public boolean checkFollowStatus(int followerId, int followeeId) {
+        User follower = userMapper.findById(followerId);
+        User followee = userMapper.findById(followeeId);
+        if (follower == null)
+        {
+            throw new UserNotFoundException("User Not Found with id: " + followerId);
+        }
+
+        if (followee == null)
+        {
+            throw new UserNotFoundException("User Not Found with id: " + followeeId);
+        }
+        Follow follow = followMapper.findByFollowerAndFollowee(followerId, followeeId);
+
+        // 如果找到了关注记录，则返回 true，表示已关注
+        if (follow != null) {
+            return true;
+        }
+
+        // 如果没有找到记录，则返回 false，表示没有关注
+        return false;
+
     }
 }

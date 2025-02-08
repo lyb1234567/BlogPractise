@@ -39,9 +39,10 @@ public class ArticleServiceImpl implements ArticleService {
         BeanUtils.copyProperties(articleCreateDTO, article);
 
         User user = userMapper.findById(articleCreateDTO.getUserId());
+        System.out.println("articelCreateDTO:"+articleCreateDTO);
         if(user == null)
         {
-           throw new IllegalArgumentException("User not found");
+           throw new UserNotFoundException("User not found");
         }
         // 设置创建时间和更新时间为当前时间
         LocalDateTime now = LocalDateTime.now();
