@@ -3,294 +3,95 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown文章编辑器</title>
-  <!-- CDN：marked 用于解析 Markdown -->
-  <script src="https://cdn.jsdelivr.net/npm/marked@4.0.0/marked.min.js"></script>
-  <!-- CDN：KaTeX 用于渲染数学公式 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-  <!-- CDN：highlight.js 用于代码块语法高亮 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/default.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+  <title>展开收起文章示例</title>
   <style>
-    /* 全局样式 */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    /* 外层容器，左右分栏布局，固定高度 800px，并显示滚动条 */
-    .container {
-      display: flex;
-      height: 800px;
-      border: 1px solid #ccc;
-      overflow: hidden;
-    }
-    /* 编辑区与预览区均带内边距及垂直滚动条 */
-    .editor, .preview {
-      padding: 10px;
-      overflow-y: auto;
-    }
-    /* 编辑区占 60%，右侧预览区占 40% */
-    .editor {
-      flex: 0 0 60%;
-      border-right: 1px solid #ccc;
-    }
-    .preview {
-      flex: 0 0 40%;
-      background: #f9f9f9;
-    }
-    /* 输入区域样式 */
-    input[type="text"], textarea {
-      width: 100%;
-      box-sizing: border-box;
-      margin-bottom: 10px;
-      padding: 5px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-    /* 按钮样式 */
-    button {
-      padding: 8px 16px;
-      margin-right: 10px;
-      border: none;
-      background-color: #4CAF50;
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    /* 响应式：手机屏幕下左右堆叠 */
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-        height: auto;
-      }
-      .editor, .preview {
-        flex: 1 1 100%;
-        border-right: none;
-        border-bottom: 1px solid #ccc;
-      }
-      .preview {
-        border-bottom: none;
-      }
-    }
-    /* 预览内容的额外样式 */
-    .preview h1 {
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 10px;
-    }
-    .preview blockquote {
-      color: gray;
-      border-left: 4px solid #ccc;
-      padding-left: 10px;
-      margin: 10px 0;
-    }
-  </style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        .article-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .article-content {
+            margin-bottom: 20px;
+        }
+
+        .extra-content {
+            display: none;
+            margin-top: 10px;
+            color: #666;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-<!-- 页面顶部标题 -->
-<h1>Markdown文章编辑器</h1>
-<div class="container">
-  <!-- 编辑区：包含文章标题、摘要、正文、上传封面及提交按钮 -->
-  <div class="editor">
-    <div>
-      <label for="title">文章标题：</label>
-      <input type="text" id="title" placeholder="请输入文章标题">
-    </div>
-    <div>
-      <label for="abstract">摘要：</label>
-      <textarea id="abstract" placeholder="请输入摘要"></textarea>
-    </div>
-    <div>
-      <label for="content">正文内容（支持 Markdown）：</label>
-      <textarea id="content" placeholder="请输入正文内容，支持 Markdown 语法及数学公式，例如：$E=mc^2$ 或 $$\\int_0^1 x^2dx$$"></textarea>
-    </div>
-    <div>
-      <label for="coverUpload">上传封面：</label>
-      <input type="file" id="coverUpload" accept="image/*">
-    </div>
-    <div>
-      <button id="submitBtn">提交文章</button>
+<div class="article-container">
+  <h2>示例文章标题</h2>
+  <div class="article-content" id="articleContent">
+    <!-- 文章的前一部分 -->
+    <p id="introContent">这是文章的前面部分内容。这里只展示一些引导内容。</p>
+
+    <!-- 文章的剩余部分 -->
+    <div class="extra-content" id="extraContent">
+      <p>这里是文章的后续部分，只有在点击“展开”按钮后才会显示出来。可以继续展示更多的内容。</p>
+      <p>如果你想要看到更多内容，请点击按钮以展开整个文章。</p>
     </div>
   </div>
-  <!-- 预览区：实时显示渲染后的效果 -->
-  <div class="preview" id="preview">
-    <!-- 渲染内容将在此实时更新 -->
-  </div>
+
+  <!-- 展开/收起按钮 -->
+  <button id="toggleButton" onclick="toggleArticle()">展开</button>
 </div>
-<!-- 显示最后保存时间戳 -->
-<div id="lastSaved" style="margin-top:10px; text-align:right;">最后保存时间：--</div>
 
 <script>
-    /**
-     * 使用 KaTeX 渲染数学公式
-     * 本函数遍历指定元素下的所有文本节点，
-     * 对不在 CODE 或 PRE 标签内的文本进行替换：
-     *   - $$...$$ 渲染为块级公式（displayMode: true）
-     *   - $...$ 渲染为行内公式（displayMode: false）
-     * 若公式渲染出错，则保留原生 TeX 代码
-     */
-    function renderMathInElement(element) {
-      // 创建 TreeWalker 遍历所有文本节点
-      var walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
-      var node;
-      var textNodes = [];
-      while(node = walker.nextNode()){
-        textNodes.push(node);
-      }
-      textNodes.forEach(function(textNode) {
-        // 如果父节点为 CODE 或 PRE，则跳过（避免处理代码块内容）
-        if (textNode.parentNode && (textNode.parentNode.tagName === 'CODE' || textNode.parentNode.tagName === 'PRE')) {
-          return;
+        // 假设从数据库获取完整文章内容
+        var fullArticle = "这是文章的前面部分内容。这里只展示一些引导内容。这里是文章的后续部分，只有在点击“展开”按钮后才会显示出来。可以继续展示更多的内容。如果你想要看到更多内容，请点击按钮以展开整个文章。";
+
+        // 设定每次显示的字符数
+        var maxLength = 10;
+
+        // 获取前部分内容
+        var introContent = fullArticle.slice(0, maxLength);
+        // 获取后续内容
+        var extraContent = fullArticle.slice(maxLength);
+
+        // 将前部分和后续内容分别显示
+        document.getElementById('introContent').textContent = introContent;
+        document.getElementById('extraContent').textContent = extraContent;
+
+        // 切换文章显示的功能
+        function toggleArticle() {
+            var extraContent = document.getElementById('extraContent');
+            var toggleButton = document.getElementById('toggleButton');
+
+            if (extraContent.style.display === 'none') {
+                extraContent.style.display = 'block';
+                toggleButton.innerText = '收起';
+            } else {
+                extraContent.style.display = 'none';
+                toggleButton.innerText = '展开';
+            }
         }
-        var originalText = textNode.nodeValue;
-        // 先处理块级公式：$$...$$
-        var replaced = originalText.replace(/\$\$([\s\S]+?)\$\$/g, function(match, formula) {
-          try {
-            return katex.renderToString(formula, {displayMode: true, throwOnError: true});
-          } catch (e) {
-            return match; // 出错时返回原公式
-          }
-        });
-        // 再处理行内公式：$...$
-        replaced = replaced.replace(/\$([^$]+?)\$/g, function(match, formula) {
-          try {
-            return katex.renderToString(formula, {displayMode: false, throwOnError: true});
-          } catch (e) {
-            return match;
-          }
-        });
-        if (replaced !== originalText) {
-          // 将替换后的 HTML 代码转成节点，并替换原来的文本节点
-          var span = document.createElement('span');
-          span.innerHTML = replaced;
-          textNode.parentNode.replaceChild(span, textNode);
-        }
-      });
-    }
-
-    /**
-     * 更新预览区内容并保存数据到 localStorage
-     * 说明：
-     *  - 使用 marked 将摘要和正文内容转换为 HTML
-     *  - 标题使用 <h1> 标签显示，摘要以灰色引用块展示
-     *  - 调用 highlight.js 为代码块添加语法高亮
-     *  - 调用 renderMathInElement 渲染数学公式
-     *  - 更新最后保存时间戳
-     */
-    function updatePreview() {
-      var title = document.getElementById('title').value;
-      var abstract = document.getElementById('abstract').value;
-      var content = document.getElementById('content').value;
-
-      var previewHtml = "";
-      if(title) {
-        previewHtml += "<h1>" + title + "</h1>";
-      }
-      if(abstract) {
-        // 使用 marked 解析 Markdown，摘要包裹在 blockquote 中
-        previewHtml += "<blockquote>" + marked.parse(abstract) + "</blockquote>";
-      }
-      if(content) {
-        previewHtml += marked.parse(content);
-      }
-
-      var previewContainer = document.getElementById('preview');
-      previewContainer.innerHTML = previewHtml;
-
-      // 对预览区中所有代码块进行语法高亮处理
-      previewContainer.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightElement(block);
-      });
-
-      // 使用 KaTeX 渲染数学公式
-      renderMathInElement(previewContainer);
-
-      // 更新最后保存时间显示
-      var now = new Date();
-      document.getElementById('lastSaved').innerText = "最后保存时间：" + now.toLocaleString();
-    }
-
-    /**
-     * 保存编辑器中的内容到 localStorage
-     */
-    function saveContent() {
-      var data = {
-        title: document.getElementById('title').value,
-        abstract: document.getElementById('abstract').value,
-        content: document.getElementById('content').value,
-        lastSaved: new Date().toISOString()
-      };
-      localStorage.setItem('editorData', JSON.stringify(data));
-      // 更新最后保存时间显示
-      document.getElementById('lastSaved').innerText = "最后保存时间：" + new Date().toLocaleString();
-    }
-
-    /**
-     * 页面加载时从 localStorage 中恢复上次编辑的内容
-     */
-    function loadContent() {
-      var data = localStorage.getItem('editorData');
-      if(data) {
-        try {
-          var obj = JSON.parse(data);
-          if(obj.title) document.getElementById('title').value = obj.title;
-          if(obj.abstract) document.getElementById('abstract').value = obj.abstract;
-          if(obj.content) document.getElementById('content').value = obj.content;
-        } catch(e) {
-          console.error("解析保存数据出错：", e);
-        }
-      }
-    }
-
-    // 为输入框添加实时更新及自动保存事件
-    document.getElementById('title').addEventListener('input', function() {
-      updatePreview();
-      saveContent();
-    });
-    document.getElementById('abstract').addEventListener('input', function() {
-      updatePreview();
-      saveContent();
-    });
-    document.getElementById('content').addEventListener('input', function() {
-      updatePreview();
-      saveContent();
-    });
-
-    // 提交按钮：演示提交后弹窗提示并将数据打印到控制台
-    document.getElementById('submitBtn').addEventListener('click', function() {
-      alert("文章提交成功！");
-      console.log("文章标题:", document.getElementById('title').value);
-      console.log("摘要:", document.getElementById('abstract').value);
-      console.log("正文内容:", document.getElementById('content').value);
-      // 如有需要，可在提交后清除 localStorage 保存的数据
-      // localStorage.removeItem('editorData');
-    });
-
-    // 上传封面：演示上传后在控制台打印文件名（实际项目中可进行图片预览或上传操作）
-    document.getElementById('coverUpload').addEventListener('change', function(event) {
-      var file = event.target.files[0];
-      if(file) {
-        console.log("上传的封面文件:", file.name);
-        // 可在此处添加图片预览或上传处理逻辑
-      }
-    });
-
-    // 页面加载时恢复数据并更新预览区
-    window.addEventListener('load', function() {
-      loadContent();
-      updatePreview();
-    });
-  </script>
+    </script>
 </body>
 </html>

@@ -194,6 +194,12 @@ a:hover {
     margin-bottom: 1rem;
     font-size: 1.1rem;
 }
+/*  修改这里  */
+.profile-main #tab-content {
+    max-height: 400px; /* 设置 #tab-content 的最大高度，可以根据需要调整 */
+    overflow-y: auto;  /* 当内容超出 max-height 时，显示垂直滚动条 */
+    padding-right: 10px; /*  为了滚动条不遮挡内容，可以添加一些右内边距 */
+}
 
 .activity-item {
     position: relative;

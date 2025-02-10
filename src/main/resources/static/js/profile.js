@@ -159,49 +159,76 @@ function loadTabsInfo(tabKey, userId) {
             tabContent.innerHTML = `<p style="color:red;">加载文章出错：${error}</p>`;
         });
     }else if (tabKey === "dynamic")
-    {
-       getArticlesLikedByUserId(userId)
-               .then(articleList => {
-                   // 如果没有数据，就提示“暂无动态”
-                   if (!articleList || articleList.length === 0) {
-                       tabContent.innerHTML = "<p>暂无动态</p>";
-                   } else {
-                       // 遍历用户点赞的文章列表
-                       articleList.forEach(item => {
-                           // 创建一个 <article> 元素
-                           const article = document.createElement("article");
-                           article.className = "activity-item";
+         {
+             const tabContent = document.getElementById("tab-content");
+             tabContent.innerHTML = ""; // 清空内容
 
-                           // 格式化 creationDate
-                           const creationDate = item.creationDate
-                               ? item.creationDate.replace("T", " ")
-                               : "暂无时间";
+             // 先加载发表的文章列表
+             getArticles(userId)
+                 .then(createdArticles => {
+                     if (createdArticles && createdArticles.length > 0) {
+                         createdArticles.forEach(item => {
+                             const article = document.createElement("article");
+                             article.className = "activity-item";
+                             let creationDate = item.creationDate
+                                 ? item.creationDate.replace("T", " ")
+                                 : "暂无时间";
+                             article.innerHTML = `
+                                 <header>
+                                     <h6 style="color: #666">发表了文章</h6>
+                                     <h4>${item.title || "暂无标题"}</h4>
+                                 </header>
+                                 <div class="time-wrapper"><time>${creationDate}</time></div>
+                                 <p>${item.content || "暂无内容"}</p>
+                                 <footer>
+                                     <a href="/article.html?articleId=${item.id || ""}">查看详情</a>
+                                 </footer>
+                             `;
+                             tabContent.appendChild(article);
+                         });
+                     } else {
+                         tabContent.innerHTML += "<p>暂无动态</p>"; // 如果之前没有内容，就显示 “暂无动态”
+                     }
 
-                           // 设置 article 的 HTML 内容
-                           article.innerHTML = `
-                               <header>
-                                   <h6 style="color: #666">赞同了文章</h6>
-                                   <h4>${item.title || "暂无标题"}</h4>
-                               </header>
-                               <div class="time-wrapper">
-                                   <time>${creationDate}</time>
-                               </div>
-                               <p>${item.content || "暂无内容"}</p>
-                               <footer>
-                                   <a href="/article.html?articleId=${item.id || ""}">查看详情</a>
-                               </footer>
-                           `;
-                           // 将 <article> 插入到 tabContent 中
-                           tabContent.appendChild(article);
-                       });
-                   }
-               })
-               .catch(error => {
-                   console.error("获取文章出错:", error);
-                   // 在 tabContent 中提示错误信息
-                   tabContent.innerHTML = `<p style="color:red;">加载文章出错：${error}</p>`;
-               });
-    }
+                     // 再加载点赞的文章列表
+                     return getArticlesLikedByUserId(userId); // 返回 Promise，链式调用
+                 })
+                 .then(likedArticles => {
+                     if (likedArticles && likedArticles.length > 0) {
+                         likedArticles.forEach(item => {
+                             const article = document.createElement("article");
+                             article.className = "activity-item";
+
+                             const creationDate = item.creationDate
+                                 ? item.creationDate.replace("T", " ")
+                                 : "暂无时间";
+
+                             article.innerHTML = `
+                                 <header>
+                                     <h6 style="color: #666">赞同了文章</h6>
+                                     <h4>${item.title || "暂无标题"}</h4>
+                                 </header>
+                                 <div class="time-wrapper">
+                                     <time>${creationDate}</time>
+                                 </div>
+                                 <p>${item.content || "暂无内容"}</p>
+                                 <footer>
+                                     <a href="/article.html?articleId=${item.id || ""}">查看详情</a>
+                                 </footer>
+                             `;
+                             tabContent.appendChild(article);
+                         });
+                     } else if (tabContent.innerHTML.trim() === "<p>暂无动态</p>") {
+                         // 如果之前已经显示了 “暂无动态”，这里就不再重复显示
+                     } else if (tabContent.innerHTML.trim() === "") {
+                         tabContent.innerHTML = "<p>暂无动态</p>"; // 如果发表的文章也没有，点赞的文章也没有，显示 “暂无动态”
+                     }
+                 })
+                 .catch(error => {
+                     console.error("获取动态出错:", error);
+                     tabContent.innerHTML = `<p style="color:red;">加载动态出错：${error}</p>`;
+                 });
+         }
     else if (tabKey === "follows") {
         fetch(`/user/getFollowers?userId=${userId}`, {
             method: "GET",
@@ -308,6 +335,7 @@ function getArticles(userId) {
         return [];
     });
 }
+
 
 /**
  * 获取用户点赞的文章
