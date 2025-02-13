@@ -174,6 +174,40 @@ a:hover {
     border-bottom: 2px solid #3498db;
     color: #3498db;
 }
+.article-content-wrapper {
+    display: block; /*  修改为 block 布局 */
+    position: relative; /*  保持 relative 定位 */
+    padding-right: 70px; /*  为绝对定位的按钮预留空间 */
+    /*  移除 display: inline; 或者 display: inline-block; */
+}
+
+.article-short-content {
+    display: block; /*  保持 block，确保占据整行宽度，避免与按钮发生 inline 布局问题 */
+    vertical-align: middle; /*  可以移除，block 元素不需要 vertical-align */
+}
+
+.article-full-content {
+    display: none; /* 初始隐藏完整内容 */
+    margin-top: 0.5em; /* 可以添加一些上边距，与短内容隔开 */
+}
+
+.read-more-link {
+    color: #007bff;
+    text-decoration: none;
+    cursor: pointer;
+    /* display: inline-block;  移除 inline-block */
+    /* margin-left: 0.3em;   移除 margin-left */
+    /*  移除 margin-top: 0.5em;  */
+    position: absolute; /* 添加绝对定位 */
+    bottom: 0;          /* 距离容器底部 0px */
+    right: 0;           /* 距离容器右侧 0px */
+    padding: 5px 10px;   /* 可以添加一些内边距 */
+    background-color: #f5f5f5; /*  背景色 */
+}
+
+.read-more-link:hover {
+    text-decoration: underline;
+}
 
 /* 主体布局 */
 .main-layout {

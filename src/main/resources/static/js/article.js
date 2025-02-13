@@ -4,6 +4,7 @@ let rootComments = []; // 顶级评论数组
 
 // ========== 主题切换 (示例) ==========
 const toggleThemeBtn = document.getElementById("toggleThemeBtn");
+const user = JSON.parse(localStorage.getItem('user'));
 
 if (toggleThemeBtn) {
   toggleThemeBtn.addEventListener("click", () => {
@@ -474,6 +475,25 @@ function incrementTotalRepliesUpChain(commentId) {
       current = null;
     }
   }
+}
+async function fetchLikedUsers(articleId) {
+    try {
+        const response = await fetch(`/article/getUserWhoLikes?articleId=${articleId}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        const result = await response.json();
+        if (response.ok && result.code === 1) {
+            return result.data;
+        } else {
+            console.error(`获取文章 ${articleId} 的点赞用户失败:`, result.message);
+            return [];
+        }
+    } catch (error) {
+        console.error(`获取文章 ${articleId} 的点赞用户错误:`, error);
+        return [];
+    }
 }
 
 // ========== 5. renderSingleComment: 渲染单条评论DOM(不递归) ==========

@@ -1,97 +1,213 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>展开收起文章示例</title>
+  <title>阅读全文 Example</title>
   <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f4f4f9;
-        }
+/* Basic styling to mimic the image and make it look decent */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 20px;
+}
 
-        .article-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+.text-container {
+    border: 1px solid #ddd; /* Light border like in the image */
+    padding: 15px;
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Light grey background */
+}
 
-        .article-content {
-            margin-bottom: 20px;
-        }
+.short-text {
+    /* Styles for the initially visible short text */
+}
 
-        .extra-content {
-            display: none;
-            margin-top: 10px;
-            color: #666;
-        }
+.full-text {
+    display: none; /* Initially hidden */
+    margin-top: 10px;
+}
 
-        button {
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+.read-more-link {
+    color: #1890ff; /* Blue color for the link */
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block; /* To control margin and padding */
+    margin-top: 10px;
+}
 
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+.read-more-link:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+.actions {
+    margin-top: 10px;
+    display: flex;
+    align-items: center; /* Vertically align items in the actions bar */
+    gap: 15px; /* Spacing between action icons/links */
+    color: #666; /* Grey color for action icons/text */
+}
+
+.actions svg {
+    width: 16px; /* Example size for icons */
+    height: 16px;
+    vertical-align: middle; /* Align icons with text */
+    fill: #666; /* Icon fill color */
+}
+
+.actions span, .actions a {
+    font-size: 14px;
+    color: #666;
+    text-decoration: none;
+}
+
+.actions a:hover {
+    text-decoration: underline;
+}
+
+.actions .like-button {
+    cursor: pointer;
+}
+
+.actions .comment-button {
+    cursor: pointer;
+}
+
+.actions .share-button {
+    cursor: pointer;
+}
+
+.actions .collect-button {
+    cursor: pointer;
+}
+
+.actions .like-count {
+    margin-left: 5px;
+}
+
+.actions .comment-count {
+    margin-left: 5px;
+}
+
+
+/* Style for the "赞同" (Like) button */
+.like-button-container {
+    display: inline-flex;
+    align-items: center;
+    background-color: #f0f0f0; /* Light grey background for the button */
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: #333;
+    border: 1px solid #ddd; /* Light border */
+}
+
+.like-button-container:hover {
+    background-color: #e0e0e0; /* Slightly darker on hover */
+}
+
+.like-button-container svg {
+    width: 16px;
+    height: 16px;
+    fill: #1890ff; /* Blue color for the like icon */
+    margin-right: 5px;
+}
+
+.like-button-container .like-count {
+    color: #1890ff; /* Blue color for the like count */
+    font-weight: bold;
+}
+
+.blue-arrow-up {
+    fill: #1890ff; /* Blue color for the up arrow */
+}
+
+.grey-arrow-down {
+    fill: #999; /* Grey color for the down arrow */
+}
+
+
+</style>
 </head>
 <body>
-<div class="article-container">
-  <h2>示例文章标题</h2>
-  <div class="article-content" id="articleContent">
-    <!-- 文章的前一部分 -->
-    <p id="introContent">这是文章的前面部分内容。这里只展示一些引导内容。</p>
 
-    <!-- 文章的剩余部分 -->
-    <div class="extra-content" id="extraContent">
-      <p>这里是文章的后续部分，只有在点击“展开”按钮后才会显示出来。可以继续展示更多的内容。</p>
-      <p>如果你想要看到更多内容，请点击按钮以展开整个文章。</p>
+<div class="text-container">
+  <p class="short-text">
+    <strong>已稳定盈利的高手会把自己的方法无偿奉献给他人吗？</strong><br>
+    谢锐林: 现用的模型不能说，靠它吃饭，怕因子太快失效。 但能说一个我N年用的模型，18年时实盘收益30%+, 但不保证现在依然有效，听听逻辑就好 底层逻辑...
+    <span class="full-text" id="fullText">
+            ...底层逻辑是：因子有效性是会衰减的，所以要不断寻找新因子，而寻找新因子的方法，可以从旧因子中提炼和挖掘。
+            <br><br>
+            举个例子，假设我们有一个因子A，它在过去一段时间内表现良好。但是，随着时间的推移，因子A的效果可能会逐渐减弱。这时，我们可以尝试从因子A中提炼出新的因子B和因子C。例如，我们可以分析因子A的组成部分，或者研究因子A与其他因子的相互作用，从而发现新的有效因子。
+            <br><br>
+            这种从旧因子中提炼新因子的方法，可以帮助我们不断更新和优化我们的因子库，以应对市场变化和因子失效的挑战。
+        </span>
+  </p>
+  <a href="#" class="read-more-link" id="readMoreLink">阅读全文</a>
+
+  <div class="actions">
+    <div class="like-button-container">
+      <svg class="blue-arrow-up" viewBox="0 0 24 24">
+        <path d="M7 14l5-5 5 5H7z"/>
+        <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+      <svg class="grey-arrow-down" viewBox="0 0 24 24">
+        <path d="M7 10l5 5 5-5H7z"/>
+        <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+      <span class="like-count" id="likeCount">567</span>
     </div>
+
+
+    <span class="comment-button">
+            <svg viewBox="0 0 24 24">
+                <path d="M0 0h24v24H0z" fill="none"/>
+                <path d="M21.99 4c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+            </svg>
+            <span class="comment-count">56 条评论</span>
+        </span>
+    <a href="#" class="share-button">
+      <svg viewBox="0 0 24 24">
+        <path d="M0 0h24v24H0z" fill="none"/>
+        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7L16.04 7.23c.52.47 1.2.77 1.96.77 1.65 0 3-1.35 3-3s-1.35-3-3-3-3 1.35-3 3c0 .24.04.47.09.7L7.96 6.77C7.44 6.3 6.76 6 6 6c-1.65 0-3 1.35-3 3s1.35 3 3 3c.76 0 1.44-.3 1.96-.77L15.09 11.3c-.05.23-.09.46-.09.7s.04.47.09.7L7.96 16.77c-.52-.47-1.2-.77-1.96-.77-1.65 0-3 1.35-3 3s1.35 3 3 3 3-1.35 3-3c0-.24-.04-.47-.09-.7l7.04-3.23c.52-.47 1.2-.77 1.96-.77 1.65 0 3-1.35 3-3s-1.35-3-3-3z"/>
+      </svg>
+      分享
+    </a>
+    <a href="#" class="collect-button">
+      <svg viewBox="0 0 24 24">
+        <path d="M0 0h24v24H0z" fill="none"/>
+        <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+      </svg>
+      收藏
+    </a>
+    <a href="#" class="like-button">
+      <svg viewBox="0 0 24 24">
+        <path d="M0 0h24v24H0z" fill="none"/>
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+      喜欢
+    </a>
+    <span class="more-actions">...</span>
   </div>
 
-  <!-- 展开/收起按钮 -->
-  <button id="toggleButton" onclick="toggleArticle()">展开</button>
 </div>
 
 <script>
-        // 假设从数据库获取完整文章内容
-        var fullArticle = "这是文章的前面部分内容。这里只展示一些引导内容。这里是文章的后续部分，只有在点击“展开”按钮后才会显示出来。可以继续展示更多的内容。如果你想要看到更多内容，请点击按钮以展开整个文章。";
+document.addEventListener('DOMContentLoaded', function() {
+    const readMoreLink = document.getElementById('readMoreLink');
+    const fullTextSpan = document.getElementById('fullText');
 
-        // 设定每次显示的字符数
-        var maxLength = 10;
+    readMoreLink.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent link from actually navigating
 
-        // 获取前部分内容
-        var introContent = fullArticle.slice(0, maxLength);
-        // 获取后续内容
-        var extraContent = fullArticle.slice(maxLength);
-
-        // 将前部分和后续内容分别显示
-        document.getElementById('introContent').textContent = introContent;
-        document.getElementById('extraContent').textContent = extraContent;
-
-        // 切换文章显示的功能
-        function toggleArticle() {
-            var extraContent = document.getElementById('extraContent');
-            var toggleButton = document.getElementById('toggleButton');
-
-            if (extraContent.style.display === 'none') {
-                extraContent.style.display = 'block';
-                toggleButton.innerText = '收起';
-            } else {
-                extraContent.style.display = 'none';
-                toggleButton.innerText = '展开';
-            }
+        if (fullTextSpan.style.display === 'none') {
+            fullTextSpan.style.display = 'inline'; /* Or 'block' depending on desired layout */
+            readMoreLink.textContent = '收起全文'; // Change link text to "Collapse Full Text"
+        } else {
+            fullTextSpan.style.display = 'none';
+            readMoreLink.textContent = '阅读全文'; // Change link text back to "Read Full Text"
         }
-    </script>
+    });
+});
+</script>
+
 </body>
 </html>

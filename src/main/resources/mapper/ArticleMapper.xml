@@ -45,7 +45,7 @@
         FROM article
         WHERE delete_flag != 'Y'
         ORDER BY likes DESC
-        LIMIT 5
+        LIMIT 10
     </select>
     <insert id="insert" parameterType="com.example.blog.entity.Article" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO article (

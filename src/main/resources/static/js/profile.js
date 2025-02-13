@@ -141,6 +141,8 @@ function loadTabsInfo(tabKey, userId) {
                     let creationDate = item.creationDate
                         ? item.creationDate.replace("T", " ")
                         : "暂无时间";
+
+
                     article.innerHTML = `
                         <header>
                             <h4>${item.title || "暂无标题"}</h4>
@@ -173,13 +175,32 @@ function loadTabsInfo(tabKey, userId) {
                              let creationDate = item.creationDate
                                  ? item.creationDate.replace("T", " ")
                                  : "暂无时间";
+
+
+                             const shortContentLength= 100;
+                             const fullContent = item.content || "暂无内容";
+                             let shortContent;
+                             let readMoreLinkHTML = ''; // 初始化 "阅读全文" 链接的 HTML 为空
+
+                             if (fullContent.length > shortContentLength) {
+                                 shortContent = fullContent.substring(0, shortContentLength) + "...";
+                                 readMoreLinkHTML = `<a href="#" class="read-more-link">阅读全文</a>`; // 如果内容超长，添加 "阅读全文" 链接
+                             } else {
+                                 shortContent = fullContent;
+                                 // 如果内容不超长，则 readMoreLinkHTML 保持为空，不添加链接
+                             }
+
                              article.innerHTML = `
                                  <header>
                                      <h6 style="color: #666">发表了文章</h6>
                                      <h4>${item.title || "暂无标题"}</h4>
                                  </header>
                                  <div class="time-wrapper"><time>${creationDate}</time></div>
-                                 <p>${item.content || "暂无内容"}</p>
+                                 <div class="article-content-wrapper">  <!-- 新增 wrapper 包裹短内容和链接 -->
+                                    <div class="article-short-content">${shortContent}</div>  <!-- 短内容 -->
+                                    ${readMoreLinkHTML}  <!-- 插入 "阅读全文" 链接，如果 readMoreLinkHTML 为空，则不插入任何内容 -->
+                                 </div>
+                                 <div class="article-full-content" style="display: none;">${fullContent}</div>  <!-- 完整内容，初始隐藏 -->
                                  <footer>
                                      <a href="/article.html?articleId=${item.id || ""}">查看详情</a>
                                  </footer>
@@ -189,6 +210,34 @@ function loadTabsInfo(tabKey, userId) {
                      } else {
                          tabContent.innerHTML += "<p>暂无动态</p>"; // 如果之前没有内容，就显示 “暂无动态”
                      }
+
+                    tabContent.addEventListener('click', function(event) {
+                        if (event.target.classList.contains('read-more-link')) {
+                            event.preventDefault();
+
+                            const readMoreLink = event.target;
+
+                            const article = readMoreLink.closest('.activity-item'); //  直接从 readMoreLink 向上找 .activity-item
+                            console.log("article:", article); //  添加这行，用来检查是否找到了 article
+
+                            if (article) { // 确保 article 不是 null，再继续操作
+                                const fullContentDiv = article.querySelector('.article-full-content');
+                                const shortContentDiv = article.querySelector('.article-short-content');
+
+                                if (fullContentDiv.style.display === 'none') {
+                                    fullContentDiv.style.display = 'block';
+                                    shortContentDiv.style.display = 'none';
+                                    readMoreLink.textContent = '收起全文';
+                                } else {
+                                    fullContentDiv.style.display = 'none';
+                                    shortContentDiv.style.display = 'block';
+                                    readMoreLink.textContent = '阅读全文';
+                                }
+                            } else {
+                                console.error("错误： 找不到 .activity-item 父元素 for read-more-link", readMoreLink); //  添加错误提示
+                            }
+                        }
+                    });
 
                      // 再加载点赞的文章列表
                      return getArticlesLikedByUserId(userId); // 返回 Promise，链式调用
